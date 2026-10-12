@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor — Novous Agent Factory</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-dark text-light">
+  <div class="app-container">
+    <header class="navbar">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">NOVOUS <strong>AGENT FACTORY</strong></span>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-btn" href="/">Dashboard</a>
+        <a class="nav-btn active" href="/editor">File & Agent Editor</a>
+        <a class="nav-btn" href="/chat">Chat Console</a>
+        <a class="nav-btn" href="/test">Prompt Testing</a>
+      </nav>
+      <div id="health-badge" class="badge badge-success">System Ready</div>
+    </header>
+
+    <main id="view-container" class="main-content">
+      <div class="loading-spinner">Loading Editor...</div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderEditorView } from '/static/js/editor.js';
+    const params = new URLSearchParams(location.search);
+    renderEditorView(document.getElementById('view-container'), params.get('path'));
+  </script>
+</body>
+</html>

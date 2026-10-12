@@ -1,0 +1,99 @@
+[
+  {
+    "agent_id": "researcher",
+    "label": "audit",
+    "snapshot": "researcher__audit__20261007-205151",
+    "published_at": "2026-10-07T20:51:51.468373+00:00"
+  },
+  {
+    "agent_id": "assistant",
+    "label": "snapshot",
+    "snapshot": "assistant__snapshot__20261007-210439",
+    "published_at": "2026-10-07T21:04:39.894078+00:00"
+  },
+  {
+    "agent_id": "assistant",
+    "label": "snapshot",
+    "snapshot": "assistant__snapshot__20261008-012019",
+    "published_at": "2026-10-08T01:20:19.939625+00:00"
+  },
+  {
+    "agent_id": "agent-01",
+    "label": "snapshot",
+    "snapshot": "agent-01__snapshot__20261008-033519",
+    "published_at": "2026-10-08T03:35:19.740242+00:00"
+  },
+  {
+    "agent_id": "agent-01",
+    "label": "snapshot",
+    "snapshot": "agent-01__snapshot__20261008-041810",
+    "published_at": "2026-10-08T04:18:10.205805+00:00"
+  },
+  {
+    "agent_id": "agent-01",
+    "label": "snapshot",
+    "snapshot": "agent-01__snapshot__20261008-042917",
+    "published_at": "2026-10-08T04:29:17.034009+00:00"
+  },
+  {
+    "agent_id": "codingagent",
+    "label": "snapshot",
+    "snapshot": "codingagent__snapshot__20261010-234451",
+    "published_at": "2026-10-10T23:44:51.916373+00:00"
+  },
+  {
+    "agent_id": "codingagent",
+    "label": "snapshot",
+    "snapshot": "codingagent__snapshot__20261010-234544",
+    "published_at": "2026-10-10T23:45:44.081798+00:00"
+  },
+  {
+    "agent_id": "codingagent",
+    "environment": "codebuilder",
+    "label": "snapshot",
+    "snapshot": "codebuilder__codingagent__snapshot__20261011-000732",
+    "published_at": "2026-10-11T00:07:32.771135+00:00"
+  },
+  {
+    "agent_id": "codingagent",
+    "environment": "codebuilder",
+    "label": "snapshot",
+    "snapshot": "codebuilder__codingagent__snapshot__20261011-001037",
+    "published_at": "2026-10-11T00:10:37.095313+00:00"
+  },
+  {
+    "agent_id": "codingagent",
+    "environment": "codebuilder",
+    "label": "snapshot",
+    "snapshot": "codebuilder__codingagent__snapshot__20261011-040930",
+    "published_at": "2026-10-11T04:09:30.824378+00:00"
+  },
+  {
+    "agent_id": "agent-02",
+    "environment": "workspace",
+    "label": "snapshot",
+    "snapshot": "agent-02__snapshot__20261011-041910",
+    "published_at": "2026-10-11T04:19:10.353409+00:00"
+  },
+  {
+    "agent_id": "agent-02",
+    "environment": "workspace",
+    "label": "snapshot",
+    "snapshot": "agent-02__snapshot__20261011-044547",
+    "published_at": "2026-10-11T04:45:47.321145+00:00"
+  },
+  {
+    "agent_id": "agent-02",
+    "environment": "workspace",
+    "label": "snapshot",
+    "snapshot": "agent-02__snapshot__20261011-044552",
+    "published_at": "2026-10-11T04:45:52.166454+00:00"
+  },
+  {
+    "agent_id": "agent-03",
+    "environment": "workspace",
+    "label": "snapshot",
+    "snapshot": "agent-03__snapshot__20261012-165035",
+    "published_at": "2026-10-12T16:50:35.715653+00:00"
+  }
+]

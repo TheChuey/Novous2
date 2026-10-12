@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novous Agent Factory</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/test_panel.css">
+  <link rel="stylesheet" href="/static/css/codebuilder.css">
+</head>
+<body class="bg-dark text-light">
+  <div id="app" class="app-container">
+    <!-- Top Bar Navigation -->
+    <header class="navbar">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">NOVOUS <strong>AGENT FACTORY</strong></span>
+      </div>
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="editor">File & Agent Editor</button>
+        <button class="nav-btn" data-tab="codebuilder">Code Builder</button>
+        <button class="nav-btn" data-tab="chat">Chat Console</button>
+        <button class="nav-btn" data-tab="prompt-creation">Prompt Creation</button>
+        <button class="nav-btn" data-tab="testing">Prompt Testing</button>
+      </nav>
+      <div id="health-badge" class="badge badge-success">System Ready</div>
+    </header>
+
+    <!-- Dynamic Content View Frame -->
+    <main id="view-container" class="main-content">
+      <!-- Tabs will inject view content dynamically via app.js -->
+      <div class="loading-spinner">Loading Novous Workspace...</div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.min.js"></script>
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
