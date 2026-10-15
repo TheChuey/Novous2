@@ -38,6 +38,25 @@ class AssembleRequest(BaseModel):
     extra_instructions: str = ""
 
 
+class PromptEvaluationComponent(BaseModel):
+    title: str = ""
+    content: str = ""
+    category: str = ""
+
+
+class PromptEvaluationTool(BaseModel):
+    name: str = ""
+    description: str = ""
+    signature: str = ""
+
+
+class PromptEvaluationRequest(BaseModel):
+    title: str = ""
+    description: str = ""
+    sections: list[PromptEvaluationComponent] = Field(default_factory=list)
+    tools: list[PromptEvaluationTool] = Field(default_factory=list)
+
+
 class PublishRequest(BaseModel):
     agent_id: str = Field(..., min_length=1)
     label: str = ""
@@ -124,6 +143,16 @@ def api_assemble(req: AssembleRequest):
         raise HTTPException(status_code=400,
                             detail=f"Unknown part ids: {', '.join(result['missing'])}")
     return result
+
+
+@router.post("/api/prompt-builder/evaluate")
+def api_evaluate_prompt(req: PromptEvaluationRequest):
+    return test_runner.run_prompt_component_tests(
+        req.title,
+        req.description,
+        [component.model_dump() for component in req.sections],
+        [tool.model_dump() for tool in req.tools],
+    )
 
 
 # --- Test runner -----------------------------------------------------------
@@ -263,34 +292,51 @@ def api_evaluate_markdown(payload: dict):
 @router.post("/api/testing/publish")
 def api_publish(req: PublishRequest):
     """Save a prompt to its agent profile and archive the updated definition."""
-    from core_engine.agent_factory import find_agent_dir, parse_markdown_sections
+    from core_engine.agent_factory import LIBRARY_ROOT, parse_markdown_sections, parse_yaml_frontmatter
 
-    agent_dir = find_agent_dir(req.agent_id, req.environment)
-    if not agent_dir:
+    agent_path = LIBRARY_ROOT / f"{req.agent_id}.md"
+    if not agent_path.exists():
         raise HTTPException(
             status_code=404,
             detail=f"Agent not found in {req.environment}: {req.agent_id}",
         )
 
-    json_path = agent_dir / "agent.json"
-    try:
-        metadata = json.loads(json_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise HTTPException(status_code=500, detail=f"Could not read agent metadata: {exc}")
-    if not isinstance(metadata, dict):
-        raise HTTPException(status_code=500, detail="Agent metadata must be a JSON object.")
-
     markdown = req.markdown.strip()
     if not markdown:
         raise HTTPException(status_code=400, detail="Prompt content must not be empty.")
 
+    metadata = {}
+    if agent_path.exists() and agent_path.suffix == ".md":
+        try:
+            metadata = parse_yaml_frontmatter(agent_path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            raise HTTPException(status_code=500, detail=f"Could not read agent metadata: {exc}")
+    if not isinstance(metadata, dict):
+        metadata = {}
+
     purpose = parse_markdown_sections(markdown).get("purpose", "").strip()
     if purpose:
         metadata["description"] = purpose
+    metadata["id"] = req.agent_id
+    metadata["name"] = metadata.get("name") or req.agent_id.replace("-", " ").title()
+    metadata["mode"] = metadata.get("mode") or req.environment
+    metadata["model"] = metadata.get("model") or "qwen2.5-coder:latest"
+    metadata["environment"] = req.environment
 
     try:
-        (agent_dir / "agent.md").write_text(markdown + "\n", encoding="utf-8")
-        json_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+        lines = ["---"]
+        for key in ["id", "name", "description", "mode", "model", "squad", "environment", "version"]:
+            if key not in metadata or metadata[key] in (None, ""):
+                continue
+            lines.append(f"{key}: {metadata[key]}")
+        if metadata.get("tools"):
+            lines.append("tools:")
+            for tool in metadata["tools"]:
+                lines.append(f"  - {tool}")
+        lines.append("---")
+        frontmatter = "\n".join(lines) + "\n\n"
+        agent_path.parent.mkdir(parents=True, exist_ok=True)
+        agent_path.write_text(frontmatter + markdown + "\n", encoding="utf-8")
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Could not save agent files: {exc}")
 
@@ -300,9 +346,8 @@ def api_publish(req: PublishRequest):
     snapshot_prefix = f"{req.environment}__" if req.environment != "workspace" else ""
     dest = TEST_AGENTS_DIR / f"{snapshot_prefix}{req.agent_id}__{label}__{stamp}"
     dest.mkdir(parents=True, exist_ok=True)
-    for src in agent_dir.iterdir():
-        if src.is_file():
-            shutil.copy2(src, dest / src.name)
+    if agent_path.exists():
+        shutil.copy2(agent_path, dest / agent_path.name)
 
     manifest_path = TEST_AGENTS_DIR / "manifest.json"
     manifest = []
@@ -321,10 +366,9 @@ def api_publish(req: PublishRequest):
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
     report = test_runner.run_header_tests(markdown, req.agent_id)
-    agent_path = f"{'codebuilder/' if req.environment == 'codebuilder' else ''}agents/{req.agent_id}"
-    report["source"] = f"{agent_path}/agent.md"
-    return {"saved": True, "path": f"{agent_path}/agent.md",
-            "metadata_path": f"{agent_path}/agent.json",
+    report["source"] = f"library/{req.agent_id}.md"
+    return {"saved": True, "path": f"library/{req.agent_id}.md",
+            "metadata_path": f"library/{req.agent_id}.md",
             "environment": req.environment,
             "snapshot": dest.name, "snapshot_path": f"test_agents/{dest.name}",
             "header_report": report}

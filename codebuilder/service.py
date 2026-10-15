@@ -42,14 +42,24 @@ def health() -> Dict[str, str]:
 
 
 def agent_meta() -> Dict[str, Any]:
-    """Specialist profile: ``codebuilder-agent``, else ``codingagent``, else a built-in default."""
-    for agent_id in ("codebuilder-agent", "codingagent"):
-        path = AGENTS_ROOT / agent_id / "agent.json"
-        if path.is_file():
-            try:
-                return json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, ValueError):
-                continue
+    """Resolve the specialist profile metadata from the centralized agent library."""
+    from core_engine.agent_factory import load_agent
+
+    for agent_id in ("codingagent", "codebuilder-agent"):
+        try:
+            profile = load_agent(agent_id, "codebuilder")
+            return {
+                "id": profile.id,
+                "name": profile.name,
+                "description": profile.description,
+                "mode": profile.mode,
+                "model": profile.model,
+                "tools": profile.tools,
+                "squad": "",
+                "environment": "workspace",
+            }
+        except FileNotFoundError:
+            continue
     return dict(_FALLBACK_AGENT)
 
 

@@ -11,6 +11,8 @@ from pathlib import Path
 import sys
 from typing import Callable
 
+from core_engine.agent_factory import LIBRARY_ROOT, parse_yaml_frontmatter
+
 REGISTRY: dict[str, dict] = {}
 LOAD_ERRORS: dict[str, str] = {}
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -170,19 +172,16 @@ def get_catalog_report() -> dict:
     for filename, err in load_errors.items():
         warnings.append(f"Failed to load tool module '{filename}': {err}")
 
-    # Walk workspace/agents/*/agent.json and codebuilder/agents/*/agent.json
-    agent_dirs = [
-        REPO_ROOT / "workspace" / "agents",
-        REPO_ROOT / "codebuilder" / "agents",
-    ]
+    agent_dirs = [LIBRARY_ROOT]
     for agents_dir in agent_dirs:
         try:
             if agents_dir.is_dir():
-                for agent_file in sorted(agents_dir.glob("*/agent.json")):
+                for agent_file in sorted(agents_dir.glob("*.md")):
                     try:
-                        data = json.loads(agent_file.read_text(encoding="utf-8"))
-                        agent_id = data.get("id") or agent_file.parent.name
-                        req_tools = data.get("tools", [])
+                        raw = agent_file.read_text(encoding="utf-8")
+                        meta = parse_yaml_frontmatter(raw)
+                        agent_id = meta.get("id") or agent_file.stem
+                        req_tools = meta.get("tools", [])
                         missing = [t for t in req_tools if t not in REGISTRY]
                         if missing:
                             missing_agent_tools[agent_id] = missing

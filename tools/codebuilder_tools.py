@@ -38,18 +38,76 @@ def _codebuilder_host_supports_questionnaire() -> bool:
 
 if _codebuilder_host_supports_questionnaire():
     @tool(provider="codebuilder")
-    def ask_user_questions(json_file_path: str, timeout_seconds: float = 300.0) -> str:
-        """Pause the agent and ask the user a list of questions from a JSON file in the workspace.
+  import json
 
-        The browser pops up a step-by-step dialog; once the user submits answers this
-        tool resumes and returns the questions and answers as a JSON string.
+def ask_user_questions(question_list):
+    """
+    Ask the user a list of questions through the command line.
 
-        Expected JSON file contents (a list, or an object with a "questions" list):
-        [{"id": "q1", "question": "What is the target deployment environment?"}]
-        Provide a workspace-root-relative path; do not prefix it with 'workspace/'.
-        """
-        from codebuilder import service
-        return service.ask_user(json_file_path, timeout_seconds)
+    Args:
+        question_list (list): A list of dictionaries containing
+                              'id' and 'question' fields.
 
-# Ask user questions is conditionally registered above based on host support.
+    Returns:
+        list: A list of dictionaries containing question IDs and answers.
+    """
+    answers = []
 
+    for question in question_list:
+        question_id = question.get("id", "unknown")
+        question_text = question.get("question", "")
+
+        try:
+            answer = input(f"{question_text} ").strip()
+
+            if not answer:
+                answer = "No answer provided"
+
+        except EOFError:
+            answer = "No answer provided"
+
+        answers.append({
+            "id": question_id,
+            "answer": answer
+        })
+
+    return answers
+
+
+def ask_user_questions_cli(json_data):
+    """
+    Accept JSON input, ask the questions, and return JSON answers.
+
+    Args:
+        json_data (str): A JSON string containing a list of questions.
+
+    Returns:
+        str | None: JSON string containing answers, or None on failure.
+    """
+    try:
+        questions = json.loads(json_data)
+
+        if not isinstance(questions, list):
+            print("Error: Input must be a JSON list of questions.")
+            return None
+
+        for question in questions:
+            if not isinstance(question, dict):
+                print("Error: Each question must be a JSON object.")
+                return None
+
+            if "question" not in question:
+                print("Error: Each question must contain a 'question' field.")
+                return None
+
+            if not isinstance(question["question"], str):
+                print("Error: Each question must be a string.")
+                return None
+
+        answers = ask_user_questions(questions)
+
+        return json.dumps(answers, ensure_ascii=False)
+
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON data.")
+        return None

@@ -65,9 +65,9 @@ export const Api = {
     return get('/api/agents');
   },
 
-  async createAgent(agentId, name, description, mode = 'chat', squad = '', environment = 'workspace') {
+  async createAgent(agentId, name, description, mode = 'chat', squad = '', environment = 'workspace', environmentName = '') {
     return send('POST', '/api/agents/create', {
-      agent_id: agentId, name, description, mode, squad, environment
+      agent_id: agentId, name, description, mode, squad, environment, environment_name: environmentName
     });
   },
 
@@ -223,6 +223,12 @@ export const Api = {
   async assemblePrompt(parts, extraInstructions = '') {
     return send('POST', '/api/prompt-builder/assemble', {
       parts, extra_instructions: extraInstructions
+    });
+  },
+
+  async evaluatePromptComponents(title, description, sections, tools) {
+    return send('POST', '/api/prompt-builder/evaluate', {
+      title, description, sections, tools
     });
   },
 

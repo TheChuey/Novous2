@@ -1,7 +1,7 @@
 # codebuilder/ — refactored pillar (drop-in)
 
 Replaces the existing `codebuilder/` folder. Nothing else in the app changes: same package name,
-same import paths, same URLs, same JSON/SSE shapes, same `agents/` convention.
+same import paths, same URLs, and same JSON/SSE shapes.
 
 ## Layers (dependencies point downward only)
 
@@ -32,7 +32,7 @@ schemas.py     contracts (pydantic only)
 | `server.py` | `codebuilder.interface.router`, `tools.interface.router` |
 | `tools/codebuilder_tools.py` | `codebuilder.execution.execute_python_code`, `codebuilder.schemas.CodeExecutionRequest`, `codebuilder.service` |
 | `core_engine/tool_catalog.py` | auto-discovers `tools/codebuilder_tools.py` (registry-only) |
-| `core_engine/agent_factory.py` | `codebuilder/agents/<id>/agent.json` |
+| `core_engine/agent_factory.py` | `library/<id>.md` |
 
 ## When code gets stuck
 

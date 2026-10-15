@@ -2,15 +2,27 @@
 
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent / "workspace"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = REPO_ROOT / "workspace"
+LIBRARY_ROOT = REPO_ROOT / "library"
 
 
 def resolve_project_path(relative_path: str, root: Path | None = None) -> Path:
-    base_root = (root or PROJECT_ROOT).resolve()
     if not relative_path:
         raise ValueError("A project-relative path is required.")
 
     clean_rel = relative_path.replace("\\", "/")
+    if clean_rel == "library" or clean_rel.startswith("library/"):
+        base_root = REPO_ROOT.resolve()
+        allowed_root = LIBRARY_ROOT.resolve()
+        candidate = (base_root / clean_rel).resolve()
+        try:
+            candidate.relative_to(allowed_root)
+        except ValueError:
+            raise ValueError(f"Access outside agent library '{allowed_root}' is forbidden.") from None
+        return candidate
+
+    base_root = (root or PROJECT_ROOT).resolve()
     candidate = (base_root / clean_rel).resolve()
 
     try:
@@ -62,10 +74,20 @@ def create_path(relative_path: str, kind: str = "file") -> dict:
 
 
 def get_directory_tree(relative_path: str = "") -> dict:
-    target_dir = resolve_project_path(relative_path) if relative_path else PROJECT_ROOT
+    library_requested = relative_path == "library" or relative_path.startswith("library/")
+    if library_requested:
+        target_dir = resolve_project_path(relative_path)
+        tree_root = LIBRARY_ROOT
+        path_prefix = "library"
+    else:
+        target_dir = resolve_project_path(relative_path) if relative_path else PROJECT_ROOT
+        tree_root = PROJECT_ROOT
+        path_prefix = ""
 
     def _build_tree(p: Path):
-        rel = str(p.relative_to(PROJECT_ROOT)).replace("\\", "/")
+        rel = str(p.relative_to(tree_root)).replace("\\", "/")
+        if path_prefix:
+            rel = path_prefix if rel == "." else f"{path_prefix}/{rel}"
         if p.is_file():
             return {"name": p.name, "type": "file", "path": rel}
         children = []
@@ -80,4 +102,20 @@ def get_directory_tree(relative_path: str = "") -> dict:
 
     if not target_dir.exists():
         raise FileNotFoundError(f"Directory not found: {relative_path}")
-    return _build_tree(target_dir)
+    result = _build_tree(target_dir)
+    if not relative_path and LIBRARY_ROOT.is_dir():
+        result["children"].append({
+            "name": "library",
+            "type": "directory",
+            "path": "library",
+            "children": [
+                {
+                    "name": file.name,
+                    "type": "file",
+                    "path": f"library/{file.name}",
+                }
+                for file in sorted(LIBRARY_ROOT.iterdir(), key=lambda item: item.name.lower())
+                if file.is_file()
+            ],
+        })
+    return result

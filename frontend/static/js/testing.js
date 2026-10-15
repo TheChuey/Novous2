@@ -6,7 +6,7 @@ function esc(value) {
   }[c]));
 }
 
-export function renderTestingView(container) {
+export function renderTestingView(container, payload = null) {
   container.innerHTML = `
     <div class="card testing-runner">
       <div class="card-head">
@@ -80,10 +80,19 @@ export function renderTestingView(container) {
     }
   });
 
-  renderToolWorkbench(container);
+  renderToolWorkbench(container, payload?.type === 'tool' ? payload : null);
+
+  if (payload?.type === 'category') {
+    results.innerHTML = `<p class="text-muted">Evaluating prompt category “${esc(payload.name)}” (${esc(payload.partCount)} parts)…</p>`;
+    Api.evaluateMarkdown(payload.markdown, payload.id).then(report => {
+      results.innerHTML = `<p class="text-muted small">Prompt category: <strong>${esc(payload.name)}</strong></p>${renderReport(report)}`;
+    }).catch(err => {
+      results.innerHTML = `<p class="text-danger">Error: ${esc(err.message)}</p>`;
+    });
+  }
 }
 
-function renderToolWorkbench(container) {
+function renderToolWorkbench(container, toolPayload = null) {
   container.insertAdjacentHTML('beforeend', `
     <section class="card tool-workbench mt-3" aria-labelledby="tool-workbench-title">
       <div class="card-head">
@@ -564,4 +573,12 @@ function renderToolWorkbench(container) {
 
   loadModels();
   loadToolLibrary();
+
+  if (toolPayload) {
+    codeField.value = toolPayload.source;
+    inputField.value = toolPayload.input;
+    promptField.value = toolPayload.prompt;
+    status.textContent = `Loaded ${toolPayload.name} from ${toolPayload.path} for testing`;
+    container.querySelector('.tool-workbench').scrollIntoView({ block: 'start' });
+  }
 }

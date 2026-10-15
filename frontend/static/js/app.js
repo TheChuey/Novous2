@@ -72,6 +72,9 @@ function renderDashboardView(container) {
               </select>
               <button class="btn btn-primary" id="dash-create-agent">Create</button>
             </div>
+            <div class="form-row">
+              <input id="na-environment-name" class="form-input" placeholder="Custom environment name (optional)" aria-label="Custom environment name" maxlength="64">
+            </div>
             <p class="text-danger hidden" id="na-error"></p>
           </div>
           <div class="agent-cards" id="dash-agent-cards">
@@ -135,7 +138,7 @@ function renderDashboardView(container) {
   cards.addEventListener('click', async (e) => {
     const t = e.target;
     if (t.dataset.chat) { switchTab('chat', t.dataset.chat); }
-    else if (t.dataset.edit) { switchTab('editor', `agents/${t.dataset.edit}/agent.md`); }
+    else if (t.dataset.edit) { switchTab('editor', `library/${t.dataset.edit}.md`); }
     else if (t.dataset.delete) {
       if (!confirm(`Delete agent "${t.dataset.delete}"?`)) return;
       try { await Api.deleteAgent(t.dataset.delete, 'workspace'); await refreshAgents(); renderDashboardView(container); }
@@ -196,7 +199,8 @@ function renderDashboardView(container) {
     const errBox = container.querySelector('#na-error');
     errBox.classList.add('hidden');
     try {
-      await Api.createAgent(id, name || id, desc, mode, '', environment);
+      await Api.createAgent(id, name || id, desc, mode, '', environment,
+        container.querySelector('#na-environment-name').value.trim());
       await refreshAgents();
       renderDashboardView(container);
     } catch (err) { errBox.textContent = err.message; errBox.classList.remove('hidden'); }

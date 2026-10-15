@@ -27,6 +27,7 @@ class CreateAgentRequest(BaseModel):
     mode: str = "chat"
     squad: str = ""
     environment: Literal["workspace", "codebuilder"] = "workspace"
+    environment_name: str = Field("", max_length=64)
 
 
 class ChatRequest(BaseModel):
@@ -52,6 +53,15 @@ def run_single_agent(agent_id: str, message: str, model: str | None = None,
 
     session_key = session_id or agent_id
     agent = SESSIONS.get(session_key)
+    if agent is not None and (
+        agent.profile.system_prompt != profile.system_prompt
+        or agent.profile.mode != profile.mode
+        or agent.profile.tools != profile.tools
+    ):
+        # The agent definition changed since this session started; a stale
+        # system prompt and history would keep the old behavior.
+        SESSIONS.pop(session_key, None)
+        agent = None
     if agent is None:
         try:
             tools = tool_catalog.get_tools(profile.tools) if profile.mode == "agent" else []
@@ -90,7 +100,7 @@ def run_single_agent(agent_id: str, message: str, model: str | None = None,
 
 
 def list_agents() -> list[dict]:
-    """Doorway function: list all canonical agents from workspace/agents/."""
+    """Doorway function: list all canonical agents from the central library."""
     return agent_factory.list_agents("workspace")
 
 
@@ -114,6 +124,7 @@ def api_create_agent(req: CreateAgentRequest):
             mode=req.mode if req.mode in ("chat", "agent") else "chat",
             squad=req.squad.strip(),
             environment=getattr(req, "environment", "workspace"),
+            environment_name=req.environment_name,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))

@@ -95,5 +95,12 @@
     "label": "snapshot",
     "snapshot": "agent-03__snapshot__20261012-165035",
     "published_at": "2026-10-12T16:50:35.715653+00:00"
+  },
+  {
+    "agent_id": "agent-03",
+    "environment": "workspace",
+    "label": "snapshot",
+    "snapshot": "agent-03__snapshot__20261013-163650",
+    "published_at": "2026-10-13T16:36:50.826141+00:00"
   }
 ]
