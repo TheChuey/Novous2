@@ -4,6 +4,7 @@ import ast
 import inspect
 from pathlib import Path
 import re
+import sys
 from typing import Callable
 
 from fastapi import APIRouter, HTTPException
@@ -283,6 +284,25 @@ def api_register_tool(req: RegisterToolRequest):
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+class MapPageRequest(BaseModel):
+    path: str
+    max_depth: int = 3
+    include_files: bool = True
+    offset: int = 0
+
+
+@router.post("/api/tools/map-page")
+def api_map_page(req: MapPageRequest):
+    tool_catalog.load_tools()
+    module = sys.modules.get("tools.map_tools")
+    if module is None:
+        raise HTTPException(status_code=503, detail="Map tools are not loaded.")
+    try:
+        return module.render_map_page(req.path, req.max_depth, req.include_files, req.offset)
+    except (PermissionError, ValueError, NotADirectoryError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @router.get("/api/tools/{name}")

@@ -325,11 +325,11 @@ export function renderPromptCreationView(container) {
         <div class="card-head">
           <div>
             <h3 id="tb-preview-title">Assembled Prompt</h3>
-            <p class="text-muted small">Review the completed prompt here before testing it.</p>
+            <p class="text-muted small">Review or edit the completed prompt here before testing it. Re-assembling replaces manual edits.</p>
           </div>
           <span id="tb-stats" class="text-muted small"></span>
         </div>
-        <textarea id="tb-preview" class="prompt-preview" readonly
+        <textarea id="tb-preview" class="prompt-preview"
                   placeholder="Assemble selected prompt parts to prepare the prompt for testing…"></textarea>
         <div class="toolbar-row">
           <button type="button" class="btn btn-sm" id="tb-copy">Copy</button>
@@ -338,6 +338,14 @@ export function renderPromptCreationView(container) {
             <option value="">Select agent…</option>
           </select>
           <button type="button" class="btn btn-sm" id="tb-publish">Save to Agent</button>
+          <label class="checkbox-row" title="Run the prompt on the selected chat model and check role understanding, a known fact, and hallucination resistance">
+            <input type="checkbox" id="tb-model-test" checked> <span>Model test</span>
+          </label>
+          <input class="form-input" id="tb-fact-q" aria-label="Fact question" value="What is the capital of France?" style="max-width: 14rem;">
+          <input class="form-input" id="tb-fact-a" aria-label="Expected answer" value="Paris" style="max-width: 6rem;">
+          <label class="checkbox-row" title="Also have the selected chat model review each section against a rubric">
+            <input type="checkbox" id="tb-ai-review"> <span>AI rubric review</span>
+          </label>
           <button type="button" class="btn btn-sm btn-primary" id="tb-test-prompt">Test Prompt</button>
         </div>
         <p id="tb-msg" class="small hidden"></p>
@@ -397,9 +405,9 @@ export function renderPromptCreationView(container) {
   let promptRevision = 0;
   let testedPromptRevision = null;
   const promptTools = new Map();
-  const chatWidthStorageKey = 'novous.prompt-creation.chat-width';
+  const chatWidthStorageKey = 'novous2.prompt-creation.chat-width';
   let markdownDraft = '';
-  const stateStorageKey = 'novous.prompt-creation.state';
+  const stateStorageKey = 'novous2.prompt-creation.state';
   let restoredParts = [];
 
   function saveState() {
@@ -535,24 +543,34 @@ export function renderPromptCreationView(container) {
     stats.textContent = `${promptPartCount} sections · ${promptTools.size} tools · ${preview.value.length} chars`;
   }
 
+  preview.addEventListener('input', () => {
+    stats.textContent = `${promptPartCount} sections · ${promptTools.size} tools · ${preview.value.length} chars · edited`;
+  });
+
   async function loadPromptAgents() {
     try {
-      const [workspaceData, codeBuilderData] = await Promise.all([
+      const [workspaceData, codeBuilderData, promptData] = await Promise.all([
         Api.getAgents(),
-        Api.getCodeBuilderAgents()
+        Api.getCodeBuilderAgents(),
+        Api.getAgents('prompt-creation')
       ]);
+      const label = environment => ({ codebuilder: 'CodeBuilder', 'prompt-creation': 'Prompt Creation' })[environment] || 'Workspace';
       const agents = [
         ...(workspaceData.agents || []).map(agent => ({ ...agent, environment: 'workspace' })),
-        ...(codeBuilderData.agents || []).map(agent => ({ ...agent, environment: 'codebuilder' }))
+        ...(codeBuilderData.agents || []).map(agent => ({ ...agent, environment: 'codebuilder' })),
+        ...(promptData.agents || []).map(agent => ({ ...agent, environment: 'prompt-creation' }))
       ];
       promptAgents = agents;
       publishAgentSel.innerHTML = agents.length
-        ? `<option value="">Select agent…</option>${agents.map(a => `<option value="${esc(a.environment)}:${esc(a.id)}">${esc(a.name)} (${esc(a.id)}) — ${a.environment === 'codebuilder' ? 'CodeBuilder' : 'Workspace'}</option>`).join('')}`
+        ? `<option value="">Select agent…</option>${agents.map(a => `<option value="${esc(a.environment)}:${esc(a.id)}">${esc(a.name)} (${esc(a.id)}) — ${label(a.environment)}</option>`).join('')}`
         : '<option value="">No agents found</option>';
       chatAgentSel.innerHTML = agents.length
-        ? agents.map(a => `<option value="${esc(a.environment)}:${esc(a.id)}">${esc(a.name)} — ${a.environment === 'codebuilder' ? 'CodeBuilder' : 'Workspace'}</option>`).join('')
+        ? agents.map(a => `<option value="${esc(a.environment)}:${esc(a.id)}">${esc(a.name)} — ${label(a.environment)}</option>`).join('')
         : '<option value="">No agents available</option>';
-      selectedChatAgent = agents.find(agent => agent.environment === 'workspace') || agents[0] || null;
+      let lastAgent = null;
+      try { lastAgent = localStorage.getItem('novous2.prompt-creation.lastChatAgent'); } catch { /* storage unavailable */ }
+      selectedChatAgent = agents.find(agent => `${agent.environment}:${agent.id}` === lastAgent)
+        || agents.find(agent => agent.environment === 'workspace') || agents[0] || null;
       if (selectedChatAgent) {
         chatAgentSel.value = `${selectedChatAgent.environment}:${selectedChatAgent.id}`;
         chatStatus.textContent = `Agent: ${selectedChatAgent.name}`;
@@ -631,7 +649,7 @@ export function renderPromptCreationView(container) {
   }
   setChatWidth(savedChatWidth);
 
-  const chatFontKey = 'novous.prompt-creation.chat-font-size';
+  const chatFontKey = 'novous2.prompt-creation.chat-font-size';
   let chatFontSize = 14;
   try {
     const storedSize = Number(localStorage.getItem(chatFontKey));
@@ -755,7 +773,9 @@ export function renderPromptCreationView(container) {
     });
     const byTitle = new Map();
     for (const section of sections) {
-      const content = section.body.join('\n').trim();
+      const labelPattern = new RegExp(
+        `^\\s*[*_\`]*${section.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[*_\`]*\\s*[:.\\-–—][*_\`]*[ \\t]*`, 'i');
+      const content = section.body.join('\n').trim().replace(labelPattern, '').trim();
       if (content) byTitle.set(section.title.toLowerCase(), { title: section.title, content });
     }
     return {
@@ -929,6 +949,7 @@ export function renderPromptCreationView(container) {
 
   chatAgentSel.addEventListener('change', () => {
     const [environment, agentId] = chatAgentSel.value.split(':', 2);
+    try { localStorage.setItem('novous2.prompt-creation.lastChatAgent', chatAgentSel.value); } catch { /* storage unavailable */ }
     selectedChatAgent = promptAgents.find(agent =>
       agent.environment === environment && agent.id === agentId
     ) || null;
@@ -1420,15 +1441,17 @@ export function renderPromptCreationView(container) {
         showMsg('Failures sent to the chat agent. Use Add to draft, then Parse draft on its reply.');
       });
       actions.appendChild(fixButton);
-    } else {
+    }
+
+    {
       const createButton = document.createElement('button');
       createButton.type = 'button';
-      createButton.className = 'btn btn-sm btn-primary';
-      createButton.textContent = 'Create agent from this prompt';
+      createButton.className = result.passed ? 'btn btn-sm btn-primary' : 'btn btn-sm';
+      createButton.textContent = result.passed ? 'Create agent from this prompt' : 'Create agent anyway (tests failed)';
       actions.appendChild(createButton);
 
       const form = document.createElement('div');
-      form.className = 'card bg-elev';
+      form.className = result.passed ? 'card bg-elev' : 'card bg-elev hidden';
       form.style.cssText = 'padding: 0.75rem; margin-top: 0.5rem;';
       const defaultId = slugify(titleField.value) || 'new-agent';
       form.innerHTML = `
@@ -1439,6 +1462,7 @@ export function renderPromptCreationView(container) {
         <div class="form-row">
           <input class="form-input" data-new-agent-desc aria-label="Agent description" placeholder="Description" value="${esc(descriptionField.value.trim().split('\n')[0].slice(0, 200))}">
           <select class="form-select" data-new-agent-environment aria-label="Agent environment">
+            <option value="prompt-creation" selected>Prompt Creation</option>
             <option value="workspace">Workspace</option>
             <option value="codebuilder">CodeBuilder</option>
           </select>
@@ -1457,9 +1481,6 @@ export function renderPromptCreationView(container) {
       createButton.addEventListener('click', () => form.classList.toggle('hidden'));
       form.querySelector('[data-new-agent-cancel]').addEventListener('click', () => form.classList.add('hidden'));
       form.querySelector('[data-new-agent-save]').addEventListener('click', async event => {
-        if (testedPromptRevision !== promptRevision) {
-          return showMsg('The prompt changed since it was tested. Run Test Prompt again first.', true);
-        }
         const id = slugify(form.querySelector('[data-new-agent-id]').value);
         const name = form.querySelector('[data-new-agent-name]').value.trim();
         const description = form.querySelector('[data-new-agent-desc]').value.trim();
@@ -1472,7 +1493,7 @@ export function renderPromptCreationView(container) {
         try {
           await Api.createAgent(id, name, description, mode, '', agentEnvironment, environmentName);
           await Api.publishAgent(id, 'prompt-creation', preview.value, agentEnvironment);
-          showMsg(`Agent '${name}' created from the tested prompt (library/${id}.md).`);
+          showMsg(`Agent '${name}' created from the prompt (library/${id}.md)${result.passed ? '.' : ' even though tests failed.'}`);
           form.classList.add('hidden');
           await loadPromptAgents();
         } catch (err) {
@@ -1483,9 +1504,8 @@ export function renderPromptCreationView(container) {
       });
       testResult.appendChild(actions);
       testResult.appendChild(form);
-      return;
     }
-    testResult.appendChild(actions);
+    appendReportActions(result);
   }
 
   container.querySelector('#tb-test-prompt').addEventListener('click', async () => {
@@ -1514,28 +1534,71 @@ export function renderPromptCreationView(container) {
         return;
       }
       testedPromptRevision = revisionBeingTested;
-      testResult.replaceChildren();
-      const summary = document.createElement('p');
-      summary.className = result.passed ? 'text-success' : 'text-danger';
-      summary.textContent = `${result.verdict}: ${result.components_passed}/${result.components_total} prompt components passed.`;
-      testResult.appendChild(summary);
-      const componentList = document.createElement('div');
-      componentList.className = 'prompt-test-report';
-      for (const component of result.components || []) {
-        const row = document.createElement('div');
-        row.className = `prompt-test-component ${component.passed ? 'passed' : 'failed'}`;
-        const heading = document.createElement('strong');
-        heading.textContent = `${component.passed ? 'PASS' : 'NOT PASS'} · ${component.name}`;
-        row.appendChild(heading);
-        for (const check of component.checks || []) {
-          const detail = document.createElement('p');
-          detail.textContent = `${check.passed ? '✓' : '✗'} ${checkDetail(check)}`;
-          row.appendChild(detail);
+      const useProbe = container.querySelector('#tb-model-test').checked;
+      const useAi = container.querySelector('#tb-ai-review').checked;
+      const reviewModel = chatModelSel.value;
+      result.model = (useProbe || useAi) ? reviewModel : '';
+      result.strengths = [];
+      result.weaknesses = [];
+      result.improvements = [];
+      const mergeComponents = extra => {
+        result.components = [...result.components, ...extra];
+        result.components_total = result.components.length;
+        result.components_passed = result.components.filter(item => item.passed).length;
+        result.passed = result.components_passed === result.components_total;
+        result.verdict = result.passed ? 'PASS' : 'FAIL';
+      };
+      const notes = [];
+      if ((useProbe || useAi) && !reviewModel) {
+        notes.push('Model tests skipped: choose a model in the chat panel.');
+      } else {
+        if (useProbe) {
+          testResult.replaceChildren(document.createTextNode(`Structural checks done. Running model test with ${reviewModel}…`));
+          try {
+            const probe = await Api.probePrompt(
+              reviewModel, titleField.value, descriptionField.value, preview.value,
+              container.querySelector('#tb-fact-q').value, container.querySelector('#tb-fact-a').value
+            );
+            mergeComponents(probe.components || []);
+            result.strengths = probe.strengths || [];
+            result.weaknesses = probe.weaknesses || [];
+            result.improvements = probe.improvements || [];
+            result.model_log = probe.model_log || null;
+          } catch (err) {
+            notes.push(`Model test unavailable (${err.message}).`);
+          }
         }
-        componentList.appendChild(row);
+        if (useAi) {
+          testResult.replaceChildren(document.createTextNode(`Running AI rubric review with ${reviewModel}…`));
+          try {
+            const review = await Api.judgePrompt(
+              reviewModel, titleField.value, descriptionField.value, selectedPromptSections(),
+              [...promptTools.values()].map(tool => ({
+                name: tool.name, description: toolDescription(tool), signature: tool.signature
+              }))
+            );
+            mergeComponents(review.components || []);
+          } catch (err) {
+            notes.push(`AI rubric review unavailable (${err.message}).`);
+          }
+        }
       }
-      testResult.appendChild(componentList);
-      appendTestActions(result);
+      if (notes.length) result.ai_error = `${notes.join(' ')} Only the checks that ran are counted.`;
+      for (const component of result.components) {
+        if (component.passed || component.name.startsWith('Model test:')) continue;
+        const fix = (component.checks || []).filter(check => !check.passed && check.fix).map(check => check.fix)[0];
+        if (fix) result.improvements.push(`${component.name}: ${fix}`);
+        result.weaknesses.push(`${component.name} did not pass.`);
+      }
+      const passedStructural = result.components.filter(item => item.passed && !item.name.startsWith('Model test:')).length;
+      if (passedStructural) result.strengths.unshift(`${passedStructural} structural component(s) are complete and well formed.`);
+      if (revisionBeingTested !== promptRevision) {
+        testedPromptRevision = null;
+        testResult.className = 'small text-warning';
+        testResult.textContent = 'Prompt changed while the AI review was running. Run Test Prompt again.';
+        return;
+      }
+      renderPromptTestResult(result);
     } catch (err) {
       testResult.className = 'small text-danger';
       testResult.textContent = `Prompt component tests could not run: ${err.message}`;
@@ -1543,4 +1606,198 @@ export function renderPromptCreationView(container) {
       button.disabled = false;
     }
   });
+
+  function renderPromptTestResult(result) {
+    testResult.className = 'small';
+    testResult.replaceChildren();
+    const summary = document.createElement('p');
+    summary.className = result.passed ? 'text-success' : 'text-danger';
+    summary.textContent = `${result.verdict}: ${result.components_passed}/${result.components_total} prompt components passed.`
+      + (result.model ? ` Model: ${result.model}.` : '');
+    testResult.appendChild(summary);
+    if (result.model_log) {
+      const logLine = document.createElement('p');
+      logLine.className = 'text-muted';
+      logLine.textContent = `Model log (${result.model}): ${result.model_log.passes}/${result.model_log.runs} model tests passed so far.`;
+      testResult.appendChild(logLine);
+    }
+    for (const [label, items] of [['Strengths', result.strengths], ['Weaknesses', result.weaknesses], ['Room for improvement', result.improvements]]) {
+      if (!items?.length) continue;
+      const block = document.createElement('div');
+      const head = document.createElement('strong');
+      head.textContent = label;
+      const ul = document.createElement('ul');
+      for (const text of items) {
+        const li = document.createElement('li');
+        li.textContent = text;
+        ul.appendChild(li);
+      }
+      block.append(head, ul);
+      testResult.appendChild(block);
+    }
+    if (result.ai_error) {
+      const note = document.createElement('p');
+      note.className = 'text-warning';
+      note.textContent = result.ai_error;
+      testResult.appendChild(note);
+    }
+    const componentList = document.createElement('div');
+    componentList.className = 'prompt-test-report';
+    for (const component of result.components || []) {
+      const row = document.createElement('div');
+      row.className = `prompt-test-component ${component.passed ? 'passed' : 'failed'}`;
+      const heading = document.createElement('strong');
+      heading.textContent = `${component.passed ? 'PASS' : 'NOT PASS'} · ${component.name}`;
+      row.appendChild(heading);
+      for (const check of component.checks || []) {
+        const detail = document.createElement('p');
+        detail.textContent = `${check.passed ? '✓' : '✗'} ${checkDetail(check)}`;
+        row.appendChild(detail);
+      }
+      componentList.appendChild(row);
+    }
+    testResult.appendChild(componentList);
+    appendTestActions(result);
+  }
+
+  async function saveMarkdownFile(fileName, text) {
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: 'Markdown', accept: { 'text/markdown': ['.md'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(text);
+        await writable.close();
+        return handle.name;
+      } catch (err) {
+        if (err.name === 'AbortError') return null;
+        throw err;
+      }
+    }
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    return `${fileName} (sent to your browser's download location; this browser cannot choose a folder)`;
+  }
+
+  function buildReportMarkdown(result, title, notes) {
+    const fence = text => {
+      const ticks = '`'.repeat(Math.max(3, ...(String(text).match(/`+/g) || []).map(run => run.length + 1)));
+      return `${ticks}markdown\n${text}\n${ticks}`;
+    };
+    const lines = [
+      `# Prompt Test Report: ${title}`,
+      '',
+      `- **Date:** ${new Date().toLocaleString()}`,
+      `- **Verdict:** ${result.verdict}`,
+      `- **Components passed:** ${result.components_passed}/${result.components_total}`,
+      `- **Model used for testing:** ${result.model || 'none (structural checks only)'}`
+    ];
+    if (result.model_log) {
+      lines.push(`- **Model log:** ${result.model_log.passes}/${result.model_log.runs} model tests passed so far (file: test_environment/model_logs/)`);
+    }
+    if (result.ai_error) lines.push(`- **Note:** ${result.ai_error}`);
+    if (notes) lines.push(`- **Notes:** ${notes}`);
+    for (const [label, items] of [['Strengths', result.strengths], ['Weaknesses', result.weaknesses], ['Room for improvement', result.improvements]]) {
+      lines.push('', `## ${label}`, '');
+      if (items?.length) items.forEach(text => lines.push(`- ${text}`));
+      else lines.push('- None recorded.');
+    }
+    const failed = (result.components || []).filter(component => !component.passed);
+    lines.push('', '## Why it failed', '');
+    if (!failed.length) lines.push('Nothing failed.');
+    for (const component of failed) {
+      lines.push(`### ${component.name}`, '');
+      if (component.tested_text) lines.push('Tested text:', '', fence(component.tested_text), '');
+      for (const check of (component.checks || []).filter(item => !item.passed)) {
+        lines.push(`- **Check \`${check.id}\`:** ${check.evidence}`);
+        if (check.rule) lines.push(`  - Rule: ${check.rule}`);
+        if (check.observed) lines.push(`  - Observed: ${check.observed}`);
+        if (check.fix) lines.push(`  - Suggested fix: ${check.fix}`);
+      }
+      lines.push('');
+    }
+    lines.push('## All components', '');
+    for (const component of result.components || []) {
+      lines.push(`- ${component.passed ? 'PASS' : 'FAIL'} — ${component.name}`);
+    }
+    lines.push('', '## Prompt that was tested', '', fence(preview.value), '');
+    return lines.join('\n');
+  }
+
+  function appendReportActions(result) {
+    const bar = document.createElement('div');
+    bar.className = 'toolbar-row';
+    bar.style.marginTop = '0.5rem';
+    const notes = document.createElement('input');
+    notes.className = 'form-input';
+    notes.placeholder = 'Notes for this report (optional)';
+    notes.setAttribute('aria-label', 'Report notes');
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'btn btn-sm';
+    save.textContent = 'Save test report';
+    save.addEventListener('click', async () => {
+      save.disabled = true;
+      try {
+        const title = titleField.value.trim() || 'Untitled prompt';
+        const markdown = buildReportMarkdown(result, title, notes.value.trim());
+        const fileName = `${slugify(title) || 'prompt'}-test-report-${new Date().toISOString().slice(0, 10)}.md`;
+        const where = await saveMarkdownFile(fileName, markdown);
+        if (!where) return;
+        let stored = '';
+        try {
+          await Api.saveTestReport({
+            kind: 'prompt', title, model: result.model || '', subject: preview.value,
+            notes: notes.value.trim(), result
+          });
+          stored = ' A copy was also added to Saved reports.';
+        } catch {
+          // the markdown file is the primary output; the history copy is optional
+        }
+        showMsg(`Report saved: ${where}.${stored}`);
+      } catch (err) {
+        showMsg(`Could not save report: ${err.message}`, true);
+      } finally {
+        save.disabled = false;
+      }
+    });
+    const history = document.createElement('button');
+    history.type = 'button';
+    history.className = 'btn btn-sm btn-ghost';
+    history.textContent = 'Saved reports';
+    const list = document.createElement('div');
+    list.className = 'small';
+    history.addEventListener('click', async () => {
+      list.replaceChildren(document.createTextNode('Loading…'));
+      try {
+        const { reports } = await Api.listTestReports();
+        list.replaceChildren();
+        if (!reports.length) list.textContent = 'No saved reports yet.';
+        for (const report of reports.slice(0, 20)) {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'btn btn-sm btn-ghost';
+          item.style.display = 'block';
+          item.textContent = `${report.passed ? 'PASS' : 'FAIL'} · ${report.title} · ${report.model || 'structural only'} · ${report.created_at.slice(0, 16).replace('T', ' ')}`;
+          item.addEventListener('click', async () => {
+            const full = await Api.getTestReport(report.id);
+            renderPromptTestResult(full.result);
+          });
+          list.appendChild(item);
+        }
+      } catch (err) {
+        list.textContent = `Could not load reports: ${err.message}`;
+      }
+    });
+    bar.append(notes, save, history);
+    testResult.append(bar, list);
+  }
 }

@@ -11,7 +11,9 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from test_environment import prompt_builder, test_runner, tool_workbench
+from test_environment import (
+    behavior_probe, model_log, prompt_builder, prompt_judge, report_store, test_runner, tool_workbench,
+)
 
 router = APIRouter()
 
@@ -20,7 +22,7 @@ TEST_AGENTS_DIR = Path(__file__).resolve().parent / "test_agents"
 
 class HeaderTestRequest(BaseModel):
     agent_id: str = Field(..., min_length=1)
-    environment: Literal["workspace", "codebuilder"] = "workspace"
+    environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
 
 
 class ToolWorkbenchRequest(BaseModel):
@@ -57,11 +59,33 @@ class PromptEvaluationRequest(BaseModel):
     tools: list[PromptEvaluationTool] = Field(default_factory=list)
 
 
+class PromptJudgeRequest(PromptEvaluationRequest):
+    model: str = Field(..., min_length=1, max_length=120)
+
+
+class ProbeRequest(BaseModel):
+    model: str = Field(..., min_length=1, max_length=120)
+    title: str = ""
+    description: str = ""
+    prompt: str = Field(..., min_length=1, max_length=60000)
+    fact_question: str = Field("", max_length=300)
+    fact_answer: str = Field("", max_length=100)
+
+
+class SaveReportRequest(BaseModel):
+    kind: Literal["prompt", "tool"] = "prompt"
+    title: str = Field("", max_length=200)
+    model: str = Field("", max_length=120)
+    subject: str = Field("", max_length=60000)
+    notes: str = Field("", max_length=5000)
+    result: dict[str, Any]
+
+
 class PublishRequest(BaseModel):
     agent_id: str = Field(..., min_length=1)
     label: str = ""
     markdown: str = Field(..., min_length=1)
-    environment: Literal["workspace", "codebuilder"] = "workspace"
+    environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
 
 
 class AddCategoryRequest(BaseModel):
@@ -153,6 +177,60 @@ def api_evaluate_prompt(req: PromptEvaluationRequest):
         [component.model_dump() for component in req.sections],
         [tool.model_dump() for tool in req.tools],
     )
+
+
+@router.post("/api/prompt-builder/judge")
+def api_judge_prompt(req: PromptJudgeRequest):
+    try:
+        return prompt_judge.judge_prompt(
+            req.model, req.title, req.description,
+            [component.model_dump() for component in req.sections],
+            [tool.model_dump() for tool in req.tools],
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail=f"AI review returned unusable output: {exc}") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"AI review failed: {exc}") from exc
+
+
+@router.post("/api/prompt-builder/probe")
+def api_probe_prompt(req: ProbeRequest):
+    try:
+        result = behavior_probe.run_probes(
+            req.model, req.prompt, req.title, req.description, req.fact_question, req.fact_answer)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Model test failed: {exc}") from exc
+    passed = all(component["passed"] for component in result["components"])
+    log = model_log.record_run(
+        req.model, req.title, passed, result["components"],
+        result["strengths"], result["weaknesses"], result["improvements"])
+    result["model_log"] = {"runs": log["runs"], "passes": log["passes"], "probe_failures": log["probe_failures"]}
+    return result
+
+
+@router.get("/api/testing/model-logs/{model:path}")
+def api_model_log(model: str):
+    return model_log.get_log(model)
+
+
+@router.post("/api/testing/reports")
+def api_save_report(req: SaveReportRequest):
+    return report_store.save_report(req.kind, req.title, req.model, req.result, req.subject, req.notes)
+
+
+@router.get("/api/testing/reports")
+def api_list_reports():
+    return {"reports": report_store.list_reports()}
+
+
+@router.get("/api/testing/reports/{report_id}")
+def api_get_report(report_id: str):
+    try:
+        return report_store.get_report(report_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 # --- Test runner -----------------------------------------------------------

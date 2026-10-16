@@ -38,6 +38,17 @@ DIRECTIVE_VERBS = ("must", "should", "always", "never", "keep", "use", "avoid",
                    "write", "inspect", "gather", "report", "verify", "stay",
                    "lead", "follow", "cite", "act", "deliver", "work")
 
+SECTION_MIN_CHARS = 20
+
+
+def _plain_section_text(content: str, title: str = "") -> str:
+    """Strip markdown emphasis and a leading '**Title:**' label that repeats the heading."""
+    text = str(content or "").strip()
+    label = re.escape(title.strip()) if title.strip() else r"[A-Za-z][\w &/-]{0,30}"
+    text = re.sub(rf"^\s*[*_`]*{label}[*_`]*\s*[:.\-–—][*_`]*\s*", "", text, count=1, flags=re.I)
+    return re.sub(r"[*_`]+", "", text).strip()
+
+
 PROMPT_ACTION_WORDS = (
     "analyze", "answer", "build", "create", "decide", "design", "develop",
     "explain", "generate", "help", "identify", "inspect", "plan", "provide",
@@ -276,14 +287,15 @@ def run_prompt_component_tests(
     for section in sections:
         title_text = str(section.get("title") or "Untitled section").strip()
         content = str(section.get("content") or "").strip()
+        plain = _plain_section_text(content, title_text)
         category = str(section.get("category") or "").strip().lower()
         section_type = "Skill" if category in {"skill", "skills"} else "Section"
         components.append(_text_component(f"{section_type} title: {title_text}", title_text, 4))
-        component = _text_component(f"{section_type}: {title_text}", content, 40)
-        if content:
+        component = _text_component(f"{section_type}: {title_text}", plain, SECTION_MIN_CHARS)
+        if plain:
             directives = re.findall(
-                r"\b(?:" + "|".join(re.escape(v) for v in DIRECTIVE_VERBS) + r")\b",
-                content,
+                r"\b(?:" + "|".join(re.escape(v) for v in DIRECTIVE_VERBS) + r")\b|\b(?:you are|act as|your)\b",
+                plain,
                 flags=re.I,
             )
             component["checks"].append({

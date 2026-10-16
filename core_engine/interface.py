@@ -26,7 +26,7 @@ class CreateAgentRequest(BaseModel):
     description: str = ""
     mode: str = "chat"
     squad: str = ""
-    environment: Literal["workspace", "codebuilder"] = "workspace"
+    environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
     environment_name: str = Field("", max_length=64)
 
 
@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
     agent_id: str
     model: str = "qwen2.5-coder:latest"
     session_id: str | None = None
-    environment: Literal["workspace", "codebuilder"] = "workspace"
+    environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
 
 
 class ExportSessionRequest(BaseModel):
@@ -109,8 +109,10 @@ def reset_session(session_id: str) -> bool:
 
 
 @router.get("/api/agents")
-def api_list_agents():
-    return {"agents": list_agents()}
+def api_list_agents(environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"):
+    if environment == "workspace":
+        return {"agents": list_agents()}
+    return {"agents": agent_factory.list_agents(environment)}
 
 
 @router.post("/api/agents/create")
@@ -203,12 +205,12 @@ def api_export_chat_session(req: ExportSessionRequest):
     safe_session_id = re.sub(r"[^A-Za-z0-9_.-]", "_", req.session_id).strip("._")
     if not safe_session_id:
         safe_session_id = "session"
-    filename = f"novous_{safe_session_id}_{timestamp}.md"
+    filename = f"novous2_{safe_session_id}_{timestamp}.md"
     exported_at = now.strftime("%Y-%m-%d %H:%M:%S")
     agent_name = agent.profile.name or req.session_id
 
     lines = [
-        f"# Novous Chat Session Log — {agent_name}",
+        f"# Novous2 Chat Session Log — {agent_name}",
         f"**Agent ID:** `{agent.profile.id}` | **Model:** `{agent.model}` | "
         f"**Session Key:** `{req.session_id}`",
         f"**Exported At:** `{exported_at}`",

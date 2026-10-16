@@ -1,9 +1,14 @@
 {
   "categories": [
     {
-      "id": "create-a-coding-agent-prompt-basic",
-      "name": "Create a Coding Agent Prompt Basic",
+      "id": "problem-solving-agent",
+      "name": "Problem Solving Agent",
       "description": ""
+    },
+    {
+      "id": "tool-testing-agent-prompt",
+      "name": "Tool Testing Agent Prompt",
+      "description": "Evaluate the performance of given tools by answering basic questions and following predefined rules to ensure accuracy and reliability."
     }
   ]
 }

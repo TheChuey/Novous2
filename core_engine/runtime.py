@@ -75,7 +75,10 @@ class Agent:
             result = tool_func(**args) if isinstance(args, dict) else tool_func(args)
             stats["successes"] += 1
             stats["success_rate"] = stats["successes"] / stats["calls"]
-            self.tool_events.append({"tool": name, "args": args, "status": "success", "origin": origin})
+            event = {"tool": name, "args": args, "status": "success", "origin": origin}
+            if getattr(tool_func, "display_output", False) and isinstance(result, str):
+                event["display"] = result
+            self.tool_events.append(event)
             return result
         except Exception as exc:
             stats["errors"] += 1

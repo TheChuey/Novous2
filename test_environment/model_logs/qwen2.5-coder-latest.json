@@ -1,0 +1,65 @@
+{
+  "model": "qwen2.5-coder:latest",
+  "runs": 4,
+  "passes": 3,
+  "probe_failures": {
+    "fact_correct": 1
+  },
+  "entries": [
+    {
+      "at": "2026-10-15T05:35:56+00:00",
+      "title": "Chat Bot Prompt Generator",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    },
+    {
+      "at": "2026-10-15T05:40:04+00:00",
+      "title": "Chat Bot Prompt Generator",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Known fact: expected 'paris' in the reply"
+      ],
+      "improvements": [
+        "The model failed a basic fact. If the role is intentionally narrow, change the fact question in the test; otherwise add 'Answer general factual questions accurately' to the prompt, or try a larger model."
+      ]
+    },
+    {
+      "at": "2026-10-15T05:56:50+00:00",
+      "title": "Chat Bot Prompt Generator",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    },
+    {
+      "at": "2026-10-15T16:52:02+00:00",
+      "title": "Tool Testing Agent Prompt",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    }
+  ]
+}

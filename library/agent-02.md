@@ -11,6 +11,9 @@ tools:
   - write_file
   - create_file
   - list_directory
+  - list_allowed_paths
+  - map_folder
+  - map_file
   - project_status
   - ask_user_questions
 ---

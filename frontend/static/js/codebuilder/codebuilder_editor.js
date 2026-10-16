@@ -55,7 +55,7 @@ function createTextareaEditor(element, initialValue) {
   };
 }
 
-export async function attachCodeBuilderEditor(element, initialValue = "print('Hello from Novous CodeBuilder!')\n") {
+export async function attachCodeBuilderEditor(element, initialValue = "print('Hello from Novous2 CodeBuilder!')\n") {
   if (!element) {
     throw new Error('The CodeBuilder editor container was not found.');
   }

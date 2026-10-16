@@ -1,4 +1,4 @@
-/* Novous Agent Factory — Unified Dark Mode Theme */
+/* Novous2 Agent Factory — Unified Dark Mode Theme */
 
 :root {
   --bg-dark: #121316;
@@ -125,7 +125,23 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 .btn-ghost { background: transparent; border: none; color: var(--text-muted); }
 .btn-ghost:hover { color: var(--danger); }
 .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.chat-layout .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.chat-layout .btn:hover:not(:disabled) { border-color: var(--primary); }
+.chat-layout .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+.chat-layout .btn-ghost:hover:not(:disabled) { color: var(--danger); }
+.chat-layout .btn:disabled:hover { border-color: var(--border-color); }
+.chat-layout .btn-ghost:disabled:hover { color: var(--text-muted); }
+.chat-layout .btn:disabled {
+  opacity: 0.42;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+.chat-icon { display: inline-block; flex: 0 0 auto; vertical-align: middle; }
 
 .form-input, .form-select, textarea {
   background: var(--bg-elev);
@@ -353,6 +369,21 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 }
 .tool-badge.error { border-color: rgba(239, 68, 68, 0.5); color: var(--danger); }
 .tool-badge.success { border-color: rgba(34, 197, 94, 0.4); }
+.tool-badge.has-tree { align-self: stretch; max-width: 100%; }
+.tree-view {
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: Consolas, 'Cascadia Mono', 'Segoe UI Emoji', monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre;
+  overflow: auto;
+  max-height: 420px;
+}
+.tree-more { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
 
 /* --- Testing -------------------------------------------------------------- */
 .testing-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; height: calc(100vh - 110px); }

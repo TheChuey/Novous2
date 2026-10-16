@@ -1,5 +1,5 @@
 /**
- * Novous Unified API Client Wrapper
+ * Novous2 Unified API Client Wrapper
  */
 async function jsonOrThrow(res) {
   let data = null;
@@ -61,8 +61,8 @@ export const Api = {
   },
 
   // --- Agents & Chat (Core Engine) ---
-  async getAgents() {
-    return get('/api/agents');
+  async getAgents(environment = 'workspace') {
+    return get(`/api/agents?environment=${encodeURIComponent(environment)}`);
   },
 
   async createAgent(agentId, name, description, mode = 'chat', squad = '', environment = 'workspace', environmentName = '') {
@@ -85,6 +85,12 @@ export const Api = {
     });
   },
 
+  async mapFolderPage(path, maxDepth, includeFiles, offset) {
+    return send('POST', '/api/tools/map-page', {
+      path, max_depth: maxDepth, include_files: includeFiles, offset
+    });
+  },
+
   async resetChat(sessionId) {
     return send('POST', `/api/chat/reset?session_id=${encodeURIComponent(sessionId)}`);
   },
@@ -99,7 +105,7 @@ export const Api = {
 
   async exportSession(sessionId) {
     const safeSessionId = String(sessionId).replace(/[^A-Za-z0-9_.-]/g, '_');
-    const suggestedName = `novous_${safeSessionId}_${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
+    const suggestedName = `novous2_${safeSessionId}_${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
     let pickerResult = null;
     if (typeof window.showSaveFilePicker === 'function') {
       pickerResult = window.showSaveFilePicker({
@@ -230,6 +236,28 @@ export const Api = {
     return send('POST', '/api/prompt-builder/evaluate', {
       title, description, sections, tools
     });
+  },
+
+  async judgePrompt(model, title, description, sections, tools) {
+    return send('POST', '/api/prompt-builder/judge', { model, title, description, sections, tools });
+  },
+
+  async probePrompt(model, title, description, prompt, factQuestion = '', factAnswer = '') {
+    return send('POST', '/api/prompt-builder/probe', {
+      model, title, description, prompt, fact_question: factQuestion, fact_answer: factAnswer
+    });
+  },
+
+  async saveTestReport(report) {
+    return send('POST', '/api/testing/reports', report);
+  },
+
+  async listTestReports() {
+    return get('/api/testing/reports');
+  },
+
+  async getTestReport(id) {
+    return get(`/api/testing/reports/${encodeURIComponent(id)}`);
   },
 
   async runHeaderTests(agentId, environment = 'workspace') {

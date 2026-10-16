@@ -7,12 +7,13 @@ LIBRARY_ROOT = REPO_ROOT / "library"
 AGENT_ENVIRONMENTS = {
     "workspace": LIBRARY_ROOT,
     "codebuilder": LIBRARY_ROOT,
+    "prompt-creation": LIBRARY_ROOT,
 }
 
 AGENT_MD_TEMPLATE = """# {name}
 
 ## role
-You are {name}, a Novous workspace agent. You act as a specialist in your domain and own every request end to end. Always think before answering and verify any claim you reuse.
+You are {name}, a Novous2 workspace agent. You act as a specialist in your domain and own every request end to end. Always think before answering and verify any claim you reuse.
 
 ## purpose
 {purpose}

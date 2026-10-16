@@ -1,4 +1,5 @@
 import { Api } from './api.js';
+import { createIcon } from './icons.js';
 import { buildTestPanel } from './test_panel.js';
 
 function esc(value) {
@@ -29,12 +30,12 @@ export function renderChatView(container) {
             <input type="checkbox" id="chat-use-tools" checked>
             <span>Attach tools (agent mode)</span>
           </label>
-          <button class="btn btn-sm btn-primary" id="chat-save-log">Save Session Log (.md)</button>
+          <button class="btn btn-sm btn-primary" id="chat-save-log" disabled>Save Session Log (.md)</button>
           <label class="model-picker">
             <span class="model-picker-label">Model <span id="model-count" class="text-muted small"></span></span>
-            <select id="chat-model-select" class="form-select"><option value="">Detecting models…</option></select>
+            <select id="chat-model-select" class="form-select" disabled><option value="">Detecting models…</option></select>
           </label>
-          <button class="btn btn-sm" id="chat-reset">Reset session</button>
+          <button class="btn btn-sm" id="chat-reset" disabled>Reset session</button>
         </div>
         <div id="chat-session-info" class="text-muted small mt-3"></div>
       </aside>
@@ -45,7 +46,7 @@ export function renderChatView(container) {
         </div>
         <form id="chat-form" class="chat-input-bar">
           <input type="text" id="chat-input" placeholder="Type a message or instruction..." autocomplete="off" required />
-          <button type="submit" class="btn btn-primary">Send</button>
+          <button type="submit" class="btn btn-primary" disabled>Send</button>
         </form>
       </section>
 
@@ -64,6 +65,9 @@ export function renderChatView(container) {
   const messagesBox = container.querySelector('#chat-messages');
   const chatForm = container.querySelector('#chat-form');
   const chatInput = container.querySelector('#chat-input');
+  const sendButton = chatForm.querySelector('[type="submit"]');
+  const saveLogButton = container.querySelector('#chat-save-log');
+  const resetButton = container.querySelector('#chat-reset');
   const toolsToggle = container.querySelector('#chat-use-tools');
   const sessionInfo = container.querySelector('#chat-session-info');
   const modelSelect = container.querySelector('#chat-model-select');
@@ -72,6 +76,22 @@ export function renderChatView(container) {
   let agents = [];
   let installedModels = [];
   let currentModel = 'qwen2.5-coder:latest';
+  let isSending = false;
+  let isResetting = false;
+  let isSavingLog = false;
+
+  container.querySelector('#chat-save-log').prepend(createIcon('save'));
+  container.querySelector('#chat-reset').prepend(createIcon('reset'));
+  sendButton.prepend(createIcon('send'));
+
+  function syncActionButtons() {
+    const hasAgent = agents.some(agent => agent.id === agentSelect.value);
+    saveLogButton.disabled = !hasAgent || isSavingLog;
+    resetButton.disabled = !hasAgent || isResetting;
+    const wipeButton = container.querySelector('[data-test-function="wipeChat"]');
+    if (wipeButton) wipeButton.disabled = !hasAgent || isResetting;
+    sendButton.disabled = !hasAgent || modelSelect.disabled || !chatInput.value.trim() || isSending;
+  }
 
   Api.getModels().then(data => {
     installedModels = (data.models || []).sort();
@@ -79,6 +99,8 @@ export function renderChatView(container) {
       modelCount.textContent = '(none installed)';
       modelSelect.innerHTML = '<option value="">No models found — run: ollama pull</option>';
       modelSelect.disabled = true;
+      syncActionButtons();
+      syncTodoRunButton();
       return;
     }
     modelCount.textContent = `(${installedModels.length} installed)`;
@@ -86,9 +108,14 @@ export function renderChatView(container) {
       .map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
     modelSelect.disabled = false;
     syncModelSelect();
+    syncActionButtons();
+    syncTodoRunButton();
   }).catch(err => {
     modelCount.textContent = '(error)';
     modelSelect.innerHTML = `<option value="">Model list unavailable: ${esc(err.message)}</option>`;
+    modelSelect.disabled = true;
+    syncActionButtons();
+    syncTodoRunButton();
   });
 
   function syncModelSelect() {
@@ -104,6 +131,7 @@ export function renderChatView(container) {
 
   modelSelect.addEventListener('change', () => {
     currentModel = modelSelect.value;
+    syncActionButtons();
   });
 
   Api.getAgents().then(data => {
@@ -111,12 +139,24 @@ export function renderChatView(container) {
     agentSelect.innerHTML = agents.length
       ? agents.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${esc(a.mode)})</option>`).join('')
       : '<option value="">No agents found</option>';
-    if (agents.length > 0) { updateAgentMeta(agents[0].id); syncModelSelect(); }
+    if (agents.length > 0) {
+      let last = null;
+      try { last = localStorage.getItem('novous2.chat.lastAgent'); } catch { /* storage unavailable */ }
+      if (last && agents.some(a => a.id === last)) agentSelect.value = last;
+      updateAgentMeta(agentSelect.value);
+      syncModelSelect();
+    }
+    syncActionButtons();
+    syncTodoRunButton();
   }).catch(err => {
     agentSelect.innerHTML = `<option value="">Error: ${esc(err.message)}</option>`;
   });
 
-  agentSelect.addEventListener('change', (e) => { updateAgentMeta(e.target.value); syncModelSelect(); });
+  agentSelect.addEventListener('change', (e) => {
+    try { localStorage.setItem('novous2.chat.lastAgent', e.target.value); } catch { /* storage unavailable */ }
+    updateAgentMeta(e.target.value); syncModelSelect(); syncActionButtons(); syncTodoRunButton(); });
+
+  chatInput.addEventListener('input', syncActionButtons);
 
   function updateAgentMeta(id) {
     const agent = agents.find(a => a.id === id);
@@ -139,12 +179,18 @@ export function renderChatView(container) {
       appendMessage('system', 'Select an agent before resetting the chat.');
       return;
     }
+    if (isResetting) return;
 
+    isResetting = true;
+    syncActionButtons();
     try {
       await Api.resetChat(`chat-${agentId}`);
       messagesBox.innerHTML = `<div class="message system-msg">${esc(message)}</div>`;
     } catch (err) {
       appendMessage('system', 'Reset failed: ' + err.message);
+    } finally {
+      isResetting = false;
+      syncActionButtons();
     }
   }
 
@@ -167,10 +213,23 @@ export function renderChatView(container) {
   }
 
   let todoFilesLoading = false;
+  let todoRunInProgress = false;
+
+  function syncTodoRunButton() {
+    const button = container.querySelector('[data-test-function="runTestSuite"]');
+    const select = container.querySelector('#todo-file-select');
+    if (!button) return;
+    const hasAgent = agents.some(agent => agent.id === agentSelect.value);
+    button.disabled = todoFilesLoading || todoRunInProgress || !hasAgent ||
+      modelSelect.disabled || !select?.value;
+  }
+
   async function loadTodoFiles(silent = false) {
     const select = container.querySelector('#todo-file-select');
     if (!select || todoFilesLoading) return;
     todoFilesLoading = true;
+    const refreshButton = container.querySelector('#todo-file-refresh');
+    if (refreshButton) refreshButton.disabled = true;
 
     try {
       const tree = await Api.getFileTree();
@@ -232,6 +291,8 @@ export function renderChatView(container) {
       }
     } finally {
       todoFilesLoading = false;
+      if (refreshButton) refreshButton.disabled = false;
+      syncTodoRunButton();
     }
   }
 
@@ -249,8 +310,8 @@ export function renderChatView(container) {
       return;
     }
 
-    const runButton = container.querySelector('[data-test-function="runTestSuite"]');
-    if (runButton) runButton.disabled = true;
+    todoRunInProgress = true;
+    syncTodoRunButton();
 
     try {
       const fileData = await Api.readFile(selectedPath);
@@ -277,7 +338,7 @@ export function renderChatView(container) {
           const response = await Api.sendMessage(line, agentId, model, sessionId);
           removeMessage(thinkingId);
           (response.tool_events || []).forEach(event =>
-            appendToolBadge(event.tool, event.status, event.args)
+            appendToolBadge(event.tool, event.status, event.args, event.display)
           );
           appendMessage('assistant', response.reply);
         } catch (err) {
@@ -290,7 +351,8 @@ export function renderChatView(container) {
     } catch (err) {
       appendMessage('system', `Error reading or running To-Do file: ${err.message}`);
     } finally {
-      if (runButton) runButton.disabled = false;
+      todoRunInProgress = false;
+      syncTodoRunButton();
     }
   }
 
@@ -301,7 +363,10 @@ export function renderChatView(container) {
       alert('Select an agent before saving the session log.');
       return;
     }
+    if (isSavingLog) return;
 
+    isSavingLog = true;
+    syncActionButtons();
     try {
       const res = await Api.exportSession(`chat-${agentId}`);
       alert(res.locationChosen
@@ -309,6 +374,9 @@ export function renderChatView(container) {
         : `Session log download started: ${res.filename}\n\nChoose the save location in your browser's download settings.`);
     } catch (err) {
       if (err.name !== 'AbortError') alert(`Failed to save session: ${err.message}`);
+    } finally {
+      isSavingLog = false;
+      syncActionButtons();
     }
   });
   buildTestPanel('testPanelButtons', {
@@ -319,6 +387,8 @@ export function renderChatView(container) {
   loadTodoFiles();
   container.querySelector('#todo-file-refresh')
     ?.addEventListener('click', () => loadTodoFiles());
+  container.querySelector('#todo-file-select')
+    ?.addEventListener('change', syncTodoRunButton);
   const todoRefreshInterval = setInterval(() => {
     if (!container.isConnected) {
       clearInterval(todoRefreshInterval);
@@ -356,6 +426,8 @@ export function renderChatView(container) {
 
     appendMessage('user', text);
     chatInput.value = '';
+    isSending = true;
+    syncActionButtons();
 
     const thinkingId = appendMessage('assistant', 'Thinking...', true);
 
@@ -365,13 +437,16 @@ export function renderChatView(container) {
       removeMessage(thinkingId);
 
       if (res.tool_events && res.tool_events.length > 0) {
-        res.tool_events.forEach(evt => appendToolBadge(evt.tool, evt.status, evt.args));
+        res.tool_events.forEach(evt => appendToolBadge(evt.tool, evt.status, evt.args, evt.display));
       }
 
       appendMessage('assistant', res.reply);
     } catch (err) {
       removeMessage(thinkingId);
       appendMessage('system', 'Error communicating with engine: ' + err.message);
+    } finally {
+      isSending = false;
+      syncActionButtons();
     }
   });
 
@@ -387,16 +462,18 @@ export function renderChatView(container) {
 
     if (!isTemporary && role !== 'system') {
       const copyButton = document.createElement('button');
+      const copyLabel = document.createElement('span');
       copyButton.type = 'button';
       copyButton.className = 'btn btn-sm btn-ghost msg-copy-btn';
-      copyButton.innerText = 'Copy';
+      copyLabel.textContent = 'Copy';
+      copyButton.append(createIcon('copy'), copyLabel);
       copyButton.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(content);
-          copyButton.innerText = 'Copied!';
-          setTimeout(() => { copyButton.innerText = 'Copy'; }, 2000);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
         } catch (err) {
-          copyButton.innerText = 'Copy failed';
+          copyLabel.textContent = 'Copy failed';
         }
       });
       msgDiv.appendChild(copyButton);
@@ -412,14 +489,63 @@ export function renderChatView(container) {
     if (el) el.remove();
   }
 
-  function appendToolBadge(toolName, status, args) {
+  function appendToolBadge(toolName, status, args, display) {
     const badgeDiv = document.createElement('div');
     badgeDiv.className = `tool-badge ${status}`;
     const argText = args ? JSON.stringify(args) : '';
     badgeDiv.innerHTML = `🛠️ <strong>${esc(toolName)}</strong> executed (${esc(status)})
       ${argText ? `<span class="text-muted small"> ${esc(argText.slice(0, 120))}</span>` : ''}`;
+    if (display) appendTreeView(badgeDiv, args || {}, display);
     messagesBox.appendChild(badgeDiv);
     messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  const MORE_NOTE = /\n… (\d+) more lines \(next offset (\d+)\)\s*$/;
+
+  function appendTreeView(badgeDiv, args, display) {
+    const pre = document.createElement('pre');
+    pre.className = 'tree-view';
+    badgeDiv.classList.add('has-tree');
+    badgeDiv.appendChild(pre);
+
+    const showPage = (text) => {
+      const match = text.match(MORE_NOTE);
+      pre.textContent += (pre.textContent ? '\n' : '') + text.replace(MORE_NOTE, '');
+      return match ? { remaining: Number(match[1]), next: Number(match[2]) } : null;
+    };
+
+    const renderMoreControl = (more) => {
+      badgeDiv.querySelector('.tree-more')?.remove();
+      if (!more) return;
+      const bar = document.createElement('div');
+      bar.className = 'tree-more';
+      const label = document.createElement('span');
+      label.className = 'text-muted small';
+      label.textContent = `${more.remaining} more lines. Show more?`;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-sm btn-primary';
+      button.textContent = 'Show more';
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const page = await Api.mapFolderPage(
+            args.path, args.max_depth ?? 3, args.include_files ?? true, more.next
+          );
+          pre.textContent += '\n' + page.text;
+          renderMoreControl(page.remaining
+            ? { remaining: page.remaining, next: page.next_offset } : null);
+        } catch (err) {
+          label.textContent = `Could not load more: ${err.message}`;
+          button.disabled = false;
+        }
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+      });
+      bar.append(label, button);
+      badgeDiv.appendChild(bar);
+    };
+
+    renderMoreControl(showPage(display));
   }
 }
 
@@ -463,9 +589,12 @@ function openQuestionDialogModal(requestId, questions) {
       <div class="question-dialog-actions">
         <button type="button" id="dialog-prev-btn" class="btn btn-sm" ${currentIndex === 0 ? 'disabled' : ''}>Back</button>
         <button type="button" id="dialog-next-btn" class="btn btn-sm btn-primary">
-          ${isLast ? 'Submit All Answers' : 'Next Question'}
+          <span>${isLast ? 'Submit All Answers' : 'Next Question'}</span>
         </button>
       </div>`;
+
+    modal.querySelector('#dialog-prev-btn').prepend(createIcon('reset'));
+    modal.querySelector('#dialog-next-btn').prepend(createIcon(isLast ? 'check-square' : 'send'));
 
     const textarea = modal.querySelector('#dialog-answer-input');
     textarea.value = userAnswers[qId] ?? '';
@@ -489,13 +618,13 @@ function openQuestionDialogModal(requestId, questions) {
 
       const nextBtn = modal.querySelector('#dialog-next-btn');
       nextBtn.disabled = true;
-      nextBtn.textContent = 'Submitting...';
+      nextBtn.querySelector('span').textContent = 'Submitting...';
       try {
         await Api.submitAnswers(requestId, userAnswers);
         overlay.remove();
       } catch (err) {
         nextBtn.disabled = false;
-        nextBtn.textContent = 'Submit All Answers';
+        nextBtn.querySelector('span').textContent = 'Submit All Answers';
         modal.querySelector('.question-dialog-error').textContent = `Submission failed: ${err.message}`;
       }
     };

@@ -26,13 +26,15 @@ export function renderTestingView(container, payload = null) {
   const agentSel = container.querySelector('#ht-agent');
   const results = container.querySelector('#ht-results');
 
-  Promise.all([Api.getAgents(), Api.getCodeBuilderAgents()]).then(([workspaceData, codeBuilderData]) => {
+  Promise.all([Api.getAgents(), Api.getCodeBuilderAgents(), Api.getAgents('prompt-creation')]).then(([workspaceData, codeBuilderData, promptData]) => {
+    const label = environment => ({ codebuilder: 'CodeBuilder', 'prompt-creation': 'Prompt Creation' })[environment] || 'Workspace';
     const agents = [
       ...(workspaceData.agents || []).map(agent => ({ ...agent, environment: 'workspace' })),
-      ...(codeBuilderData.agents || []).map(agent => ({ ...agent, environment: 'codebuilder' }))
+      ...(codeBuilderData.agents || []).map(agent => ({ ...agent, environment: 'codebuilder' })),
+      ...(promptData.agents || []).map(agent => ({ ...agent, environment: 'prompt-creation' }))
     ];
     agentSel.innerHTML = agents.length
-      ? agents.map(agent => `<option value="${esc(agent.id)}" data-environment="${agent.environment}">${esc(agent.name)} (${esc(agent.id)}) · ${agent.environment === 'codebuilder' ? 'CodeBuilder' : 'Workspace'}</option>`).join('')
+      ? agents.map(agent => `<option value="${esc(agent.id)}" data-environment="${agent.environment}">${esc(agent.name)} (${esc(agent.id)}) · ${label(agent.environment)}</option>`).join('')
       : '<option value="">No agents found</option>';
   }).catch(err => {
     agentSel.innerHTML = `<option value="">Error: ${esc(err.message)}</option>`;
@@ -147,7 +149,7 @@ function renderToolWorkbench(container, toolPayload = null) {
         <p class="text-muted small">Promoted functions are appended to <code>workspace/tools/tool_library.py</code> so the library can be committed as one module.</p>
         <div id="tw-library" class="text-muted small">Loading tools…</div>
       </div>
-      <p class="text-muted small">Promoted code is trusted application code and will run in the Novous backend when an agent invokes it.</p>
+      <p class="text-muted small">Promoted code is trusted application code and will run in the Novous2 backend when an agent invokes it.</p>
     </section>`);
 
   const codeField = container.querySelector('#tw-code');
@@ -510,7 +512,7 @@ function renderToolWorkbench(container, toolPayload = null) {
     try {
       const saved = await Api.saveMarkdown(
         renderTestReport(lastTestReport),
-        `novous-tool-test-${stamp}.md`
+        `novous2-tool-test-${stamp}.md`
       );
       if (saved.locationChosen) {
         alert(`Test results saved as ${saved.filename}.`);
@@ -525,7 +527,7 @@ function renderToolWorkbench(container, toolPayload = null) {
   });
   promoteButton.addEventListener('click', async () => {
     if (!lastPassed || !confirm(
-      'Add this tested function to the tool library? Promoted code runs as trusted code in the Novous backend.'
+      'Add this tested function to the tool library? Promoted code runs as trusted code in the Novous2 backend.'
     )) return;
 
     try {

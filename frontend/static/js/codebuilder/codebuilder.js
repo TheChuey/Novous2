@@ -1,6 +1,6 @@
 import { attachCodeBuilderEditor, loadMonaco } from './codebuilder_editor.js';
 
-const DEMO_CODE = `print("Hello from Novous CodeBuilder!")
+const DEMO_CODE = `print("Hello from Novous2 CodeBuilder!")
 for i in range(3):
     print(f"count={i}")
 `;
@@ -37,7 +37,7 @@ async function copyTextToClipboard(text) {
   return ok;
 }
 
-const PREFS_KEY = 'novous.codebuilder.';
+const PREFS_KEY = 'novous2.codebuilder.';
 const PANEL_CONF = {
   chat:    { var: '--chat-w',    min: 240, maxFactor: 0.45, rail: 44, default: 320 },
   console: { var: '--console-w', min: 220, maxFactor: 0.45, rail: 44, default: 300 },

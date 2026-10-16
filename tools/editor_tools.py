@@ -38,7 +38,7 @@ def delete_file(path: str) -> str:
 
 @tool(provider="editor")
 def list_directory(path: str = "") -> str:
-    """List the workspace directory tree (optionally rooted at a relative path)."""
+    """List the workspace directory tree (optionally rooted at a relative path). Workspace only; for absolute paths such as C:\\... use map_folder."""
     return langgraph_tools.map_directory_tree_tool.invoke({"relative_path": path})
 
 

@@ -11,7 +11,7 @@ from test_environment.interface import router as test_router
 from codebuilder.interface import router as codebuilder_router
 from tools.interface import router as tools_router
 
-app = FastAPI(title="Novous AGENT FACTORY", version="4.0.0")
+app = FastAPI(title="Novous2 AGENT FACTORY", version="4.0.0")
 
 # Mount Component Backend Routers
 app.include_router(tools_router)

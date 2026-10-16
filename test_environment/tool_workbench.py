@@ -141,18 +141,18 @@ def _read_output(output_file) -> str:
 
 
 def _run_locally(source: str, arguments: dict, function_name: str) -> dict:
-    marker = f"__NOVOUS_RESULT_{secrets.token_hex(16)}__"
+    marker = f"__NOVOUS2_RESULT_{secrets.token_hex(16)}__"
     wrapper = (
         "\n\nif __name__ == '__main__':\n"
-        "    import json as __novous_json\n"
-        "    __novous_arguments = __novous_json.loads(input() or '{}')\n"
-        f"    __novous_result = {function_name}(**__novous_arguments)\n"
-        f"    print({marker!r} + __novous_json.dumps("
-        "__novous_result, default=str))\n"
+        "    import json as __novous2_json\n"
+        "    __novous2_arguments = __novous2_json.loads(input() or '{}')\n"
+        f"    __novous2_result = {function_name}(**__novous2_arguments)\n"
+        f"    print({marker!r} + __novous2_json.dumps("
+        "__novous2_result, default=str))\n"
     )
 
     try:
-        with tempfile.TemporaryDirectory(prefix="novous-tool-test-") as temp_dir:
+        with tempfile.TemporaryDirectory(prefix="novous2-tool-test-") as temp_dir:
             script_path = Path(temp_dir) / "tool_test.py"
             script_path.write_text(source + wrapper, encoding="utf-8")
             with tempfile.TemporaryFile() as stdout_file, tempfile.TemporaryFile() as stderr_file:

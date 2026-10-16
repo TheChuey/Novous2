@@ -39,7 +39,7 @@ function renderDashboardView(container) {
     <div class="dashboard">
       <section class="dash-hero card">
         <div>
-          <h2>${esc(project.name || 'Novous Workspace')}</h2>
+          <h2>${esc(project.name || 'Novous2 Workspace')}</h2>
           <p class="text-muted">${esc(project.description || 'Declarative Agent Factory — 4-Pillar Architecture.')}</p>
         </div>
         <div class="dash-hero-stats">
@@ -65,6 +65,7 @@ function renderDashboardView(container) {
               <select id="na-environment" class="form-select" aria-label="Agent environment">
                 <option value="workspace">Workspace</option>
                 <option value="codebuilder">CodeBuilder</option>
+                <option value="prompt-creation">Prompt Creation</option>
               </select>
               <select id="na-mode" class="form-select">
                 <option value="chat">chat</option>
@@ -79,6 +80,10 @@ function renderDashboardView(container) {
           </div>
           <div class="agent-cards" id="dash-agent-cards">
             ${agents.length ? '' : '<p class="text-muted">No agents yet. Create your first one.</p>'}
+          </div>
+          <div class="card-head mt-3"><h3>Prompt Creation Agents</h3></div>
+          <div class="agent-cards" id="dash-prompt-agent-cards">
+            <p class="text-muted">Loading Prompt Creation agents…</p>
           </div>
           <div class="card-head mt-3"><h3>CodeBuilder Agents</h3></div>
           <div class="agent-cards" id="dash-codebuilder-agent-cards">
@@ -143,6 +148,54 @@ function renderDashboardView(container) {
       if (!confirm(`Delete agent "${t.dataset.delete}"?`)) return;
       try { await Api.deleteAgent(t.dataset.delete, 'workspace'); await refreshAgents(); renderDashboardView(container); }
       catch (err) { alert(err.message); }
+    }
+  });
+
+  const promptAgentCards = container.querySelector('#dash-prompt-agent-cards');
+  function renderPromptAgentCards(promptAgents) {
+    promptAgentCards.replaceChildren();
+    if (!promptAgents.length) {
+      promptAgentCards.innerHTML = '<p class="text-muted">No Prompt Creation agents yet.</p>';
+      return;
+    }
+    promptAgents.forEach(agent => {
+      const el = document.createElement('div');
+      el.className = 'agent-card';
+      el.innerHTML = `
+        <div class="agent-card-head">
+          <strong>${esc(agent.name)}</strong>
+          <span class="badge badge-accent">Prompt Creation</span>
+        </div>
+        <p class="text-muted">${esc(agent.description || 'No description.')}</p>
+        <div class="agent-card-actions">
+          <button class="btn btn-sm" data-prompt-open="${esc(agent.id)}">Open Prompt Creation</button>
+          <button class="btn btn-sm" data-prompt-edit="${esc(agent.id)}">Edit</button>
+          <button class="btn btn-sm btn-danger" data-prompt-delete="${esc(agent.id)}">Delete</button>
+        </div>`;
+      promptAgentCards.appendChild(el);
+    });
+  }
+
+  Api.getAgents('prompt-creation').then(data => {
+    renderPromptAgentCards(data.agents || []);
+  }).catch(err => {
+    promptAgentCards.innerHTML = `<p class="text-danger">Could not load Prompt Creation agents: ${esc(err.message)}</p>`;
+  });
+
+  promptAgentCards.addEventListener('click', async e => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    if (button.dataset.promptOpen) {
+      switchTab('prompt-creation');
+    } else if (button.dataset.promptEdit) {
+      switchTab('editor', `library/${button.dataset.promptEdit}.md`);
+    } else if (button.dataset.promptDelete) {
+      const agentId = button.dataset.promptDelete;
+      if (!confirm(`Delete Prompt Creation agent "${agentId}"?`)) return;
+      try {
+        await Api.deleteAgent(agentId, 'prompt-creation');
+        renderPromptAgentCards((await Api.getAgents('prompt-creation')).agents || []);
+      } catch (err) { alert(err.message); }
     }
   });
 

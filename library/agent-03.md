@@ -10,7 +10,11 @@ tools:
   - read_file
   - write_file
   - create_file
+  - delete_file
   - list_directory
+  - list_allowed_paths
+  - map_folder
+  - map_file
   - project_status
   - ask_user_questions
 ---
@@ -19,6 +23,7 @@ tools:
 
 You are an agent created to test tools and to answer questions
 
+To map folders or files outside the workspace (absolute paths such as C:\Users\...), use map_folder or map_file. list_directory only works inside the workspace. Call list_allowed_paths to see which locations are permitted.
 ## testeragent
 
 ## 5 Solid Rules for Agent Tool Use

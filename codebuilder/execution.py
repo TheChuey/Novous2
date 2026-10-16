@@ -9,7 +9,7 @@ Public API (this is the import surface the host relies on)
                                                          the ``run_python_code`` tool use)
 ``run_stream(req)``           -> Iterator[dict]        (event stream; what ``/execute/stream`` uses)
 ``cancel_run(run_id)``        -> bool                  (stop a live run)
-``resolve_python()``          -> str                   (interpreter; ``$NOVOUS_PYTHON`` override)
+``resolve_python()``          -> str                   (interpreter; ``$NOVOUS2_PYTHON`` override)
 
 How a run is supervised
 -----------------------
@@ -106,8 +106,8 @@ def _new_run_id() -> str:
 
 
 def resolve_python() -> str:
-    """Interpreter for runs: ``$NOVOUS_PYTHON`` if set, else the server's Python."""
-    return os.environ.get("NOVOUS_PYTHON") or sys.executable
+    """Interpreter for runs: ``$NOVOUS2_PYTHON`` if set, else the server's Python."""
+    return os.environ.get("NOVOUS2_PYTHON") or sys.executable
 
 
 def _clamp_timeout(value: Optional[float]) -> float:
