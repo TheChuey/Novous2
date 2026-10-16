@@ -314,10 +314,12 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 .chat-layout {
   display: grid;
   grid-template-columns: minmax(230px, 280px) minmax(0, 1fr) minmax(280px, 330px);
+  grid-template-rows: minmax(0, 1fr);
   height: calc(100vh - 110px);
   min-height: 0;
   gap: 0.75rem;
 }
+.chat-layout > * { min-height: 0; overflow: hidden; }
 .chat-file-sidebar {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -388,6 +390,7 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 
 .chat-input-bar { display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); }
 .chat-input-bar input { flex: 1; }
+.chat-quick-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.6rem; flex-shrink: 0; }
 
 .tool-badge {
   font-size: 0.85rem;
@@ -726,11 +729,13 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
   .editor-sidebar { min-height: 260px; max-height: 40vh; }
   .editor-main { min-height: 55vh; }
   .tree-delete { opacity: 1; }
-  .chat-layout { grid-template-columns: 1fr; height: auto; }
+  .chat-layout { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
+  .chat-layout > * { overflow: visible; }
   .chat-file-sidebar { min-height: 260px; max-height: 40vh; }
-  .chat-main { min-height: 55vh; }
+  .chat-main { order: -1; height: calc(100vh - 150px); min-height: 420px; }
   .test-panel { width: 100%; min-width: 0; min-height: 360px; border-left: 0; border-top: 1px solid var(--border-color); }
-  .messages-scroll { max-height: 50vh; }
+  .messages-scroll { min-height: 0; }
+  .chat-input-bar { flex-shrink: 0; }
   .tool-workbench-grid { grid-template-columns: 1fr; }
   .tool-workbench-wide { grid-column: auto; }
 }

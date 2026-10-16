@@ -34,6 +34,12 @@ export function renderChatView(container) {
           <input type="text" id="chat-input" placeholder="Type a message or instruction..." autocomplete="off" required />
           <button type="submit" class="btn btn-primary" disabled>Send</button>
         </form>
+        <div class="chat-quick-actions">
+          <button type="button" class="btn btn-sm" id="chat-reset-quick" disabled>Reset session</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 2</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 3</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 4</button>
+        </div>
       </section>
 
       <aside class="test-panel">
@@ -77,6 +83,7 @@ export function renderChatView(container) {
   const sendButton = chatForm.querySelector('[type="submit"]');
   const saveLogButton = container.querySelector('#chat-save-log');
   const resetButton = container.querySelector('#chat-reset');
+  const quickResetButton = container.querySelector('#chat-reset-quick');
   const toolsToggle = container.querySelector('#chat-use-tools');
   const sessionInfo = container.querySelector('#chat-session-info');
   const modelSelect = container.querySelector('#chat-model-select');
@@ -111,6 +118,7 @@ export function renderChatView(container) {
     const hasAgent = agents.some(agent => agent.id === agentSelect.value);
     saveLogButton.disabled = !hasAgent || isSavingLog;
     resetButton.disabled = !hasAgent || isResetting;
+    quickResetButton.disabled = resetButton.disabled;
     const wipeButton = container.querySelector('[data-test-function="wipeChat"]');
     if (wipeButton) wipeButton.disabled = !hasAgent || isResetting;
     sendButton.disabled = !hasAgent || modelSelect.disabled || !chatInput.value.trim() || isSending;
@@ -380,6 +388,7 @@ export function renderChatView(container) {
   }
 
   container.querySelector('#chat-reset').addEventListener('click', () => resetSession());
+  quickResetButton.addEventListener('click', () => resetSession());
   container.querySelector('#chat-save-log').addEventListener('click', async () => {
     const agentId = agentSelect.value;
     if (!agentId) {
