@@ -1,7 +1,7 @@
-Date: 2026-10-14
+Date: 2026-10-15
 Name: Novous2 Application Snapshot
-Filename: NOVOUS2_APP_SNAPSHOT_20261014_new.md
-Commit: 7157db4
+Filename: NOVOUS2_APP_SNAPSHOT_20261015_new.md
+Commit: ba9b6a2
 Description: Self-contained reference for an AI agent. Captures Novous2 app purpose, architecture, file structure, and complete source code. Designed for grounding/understanding without repo access.
 
 # NOVOUS2 APPLICATION SNAPSHOT
@@ -65,6 +65,13 @@ Key components:
 - editor/editor_schemas.py
 - editor/editor_session.py
 - editor/interface.py
+- file_manager/
+- file_manager/__init__.py
+- file_manager/backend.py
+- file_manager/interface.py
+- file_manager/schemas.py
+- file_manager/service.py
+- file_manager/test_file_manager.py
 - frontend/
 - frontend/pages/
 - frontend/pages/chat.html
@@ -85,6 +92,7 @@ Key components:
 - frontend/static/js/codebuilder/codebuilder.js
 - frontend/static/js/codebuilder/codebuilder_editor.js
 - frontend/static/js/editor.js
+- frontend/static/js/icons.js
 - frontend/static/js/prompt_creation.js
 - frontend/static/js/test_panel.js
 - frontend/static/js/testing.js
@@ -92,9 +100,11 @@ Key components:
 - library/
 - library/agent-02.md
 - library/agent-03.md
+- library/ai-agent-prompt-for-tool-testing.md
 - library/codingagent.md
 - library/problem-solving-agent.md
 - library/prompt-helper.md
+- library/tool-testing-agent.md
 - requirements.txt
 - scripts/
 - scripts/gen_app_snapshot.py
@@ -117,6 +127,16 @@ Key components:
 - test_environment/PromptBuilderFiles/
 - test_environment/PromptBuilderFiles/categories.json
 - test_environment/PromptBuilderFiles/parts/
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/agent-response.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/boundaries.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/hallucination-prevention.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/instructions.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/purpose.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/responsibilities.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/role.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/skills.md
+- test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/user-question.md
 - test_environment/PromptBuilderFiles/parts/output-format/
 - test_environment/PromptBuilderFiles/parts/problem-solving-agent/
 - test_environment/PromptBuilderFiles/parts/problem-solving-agent/boundaries.md
@@ -124,6 +144,14 @@ Key components:
 - test_environment/PromptBuilderFiles/parts/problem-solving-agent/instructions.md
 - test_environment/PromptBuilderFiles/parts/problem-solving-agent/role.md
 - test_environment/PromptBuilderFiles/parts/problem-solving-agent/skills.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/hallucination-prevention.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/instructions.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/purpose.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/responsibilities.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/role.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/skills.md
+- test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/workflow.md
 - test_environment/report_store.py
 - test_environment/test_agents/
 - test_environment/test_agents/agent-02__snapshot__20261011-044547/
@@ -138,18 +166,29 @@ Key components:
 - test_environment/test_agents/agent-03__snapshot__20261013-163650/
 - test_environment/test_agents/agent-03__snapshot__20261013-163650/agent.json
 - test_environment/test_agents/agent-03__snapshot__20261013-163650/agent.md
+- test_environment/test_agents/ai-agent-prompt-for-tool-testing__prompt-creation__20261016-062701/
+- test_environment/test_agents/ai-agent-prompt-for-tool-testing__prompt-creation__20261016-062701/ai-agent-prompt-for-tool-testing.md
 - test_environment/test_agents/create-a-coding-agent-prompt-basic__prompt-creation__20261015-042016/
 - test_environment/test_agents/create-a-coding-agent-prompt-basic__prompt-creation__20261015-042016/create-a-coding-agent-prompt-basic.md
 - test_environment/test_agents/manifest.json
 - test_environment/test_agents/problem-solving-agent__prompt-creation__20261015-060636/
 - test_environment/test_agents/problem-solving-agent__prompt-creation__20261015-060636/problem-solving-agent.md
+- test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061208/
+- test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061208/ai-agent-prompt-for-tool-testing.md
+- test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061454/
+- test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061454/ai-agent-prompt-for-tool-testing.md
 - test_environment/test_agents/prompt-creation__create-a-coding-agent-prompt-basic__prompt-creation__20261015-042349/
 - test_environment/test_agents/prompt-creation__create-a-coding-agent-prompt-basic__prompt-creation__20261015-042349/create-a-coding-agent-prompt-basic.md
+- test_environment/test_agents/prompt-creation__file-manager-tools-tester-agent__prompt-creation__20261016-055631/
+- test_environment/test_agents/prompt-creation__file-manager-tools-tester-agent__prompt-creation__20261016-055631/file-manager-tools-tester-agent.md
 - test_environment/test_agents/prompt-creation__prompt-helper__prompt-creation__20261015-055749/
 - test_environment/test_agents/prompt-creation__prompt-helper__prompt-creation__20261015-055749/prompt-helper.md
+- test_environment/test_agents/tool-testing-agent__prompt-creation__20261015-165245/
+- test_environment/test_agents/tool-testing-agent__prompt-creation__20261015-165245/tool-testing-agent.md
 - test_environment/test_behavior_probe.py
 - test_environment/test_prompt_evaluation.py
 - test_environment/test_prompt_judge.py
+- test_environment/test_publish_tools.py
 - test_environment/test_reports/
 - test_environment/test_reports/20261015T052137927614-prompt-chat-bot-prompt-generator.json
 - test_environment/test_reports/20261015T052219359581-prompt-chat-bot-prompt-generator.json
@@ -163,20 +202,26 @@ Key components:
 - test_environment/tool_workbench.py
 - tools/
 - tools/__init__.py
+- tools/allowed_paths.json
 - tools/codebuilder_tools.py
 - tools/core_tools.py
 - tools/editor_tools.py
+- tools/file_manager_tools.py
 - tools/interface.py
+- tools/map_tools.py
 - tools/promoted.py
 - tools/workspace_tools.py
 - workspace/
 - workspace/__init__.py
-- workspace/docs/
 - workspace/documentation/
+- workspace/documentation/about.txt
+- workspace/example.txt
 - workspace/exports/
 - workspace/exports/sessions/
 - workspace/interface.py
+- workspace/jesus_blue.txt
 - workspace/Markdown/
+- workspace/Markdown/Response/
 - workspace/Notes/
 - workspace/Notes/Notes.txt
 - workspace/project.json
@@ -2617,7 +2662,10 @@ class Agent:
             result = tool_func(**args) if isinstance(args, dict) else tool_func(args)
             stats["successes"] += 1
             stats["success_rate"] = stats["successes"] / stats["calls"]
-            self.tool_events.append({"tool": name, "args": args, "status": "success", "origin": origin})
+            event = {"tool": name, "args": args, "status": "success", "origin": origin}
+            if getattr(tool_func, "display_output", False) and isinstance(result, str):
+                event["display"] = result
+            self.tool_events.append(event)
             return result
         except Exception as exc:
             stats["errors"] += 1
@@ -2718,6 +2766,7 @@ _LOADED_FILES: set[Path] = set()
 PROVIDER_BINDINGS = {
     "core_engine": "core_engine.interface",
     "editor": "editor.interface",
+    "file_manager": "file_manager.interface",
     "workspace": "workspace.interface",
     "test_environment": "test_environment.interface",
     "codebuilder": "codebuilder.interface",
@@ -3312,6 +3361,953 @@ async def api_ws(websocket: WebSocket):
 
 `
 
+### file_manager/__init__.py
+
+`python
+"""Workspace-scoped file manager."""
+
+from file_manager.service import FileManagerService, file_manager_service
+
+__all__ = ["FileManagerService", "file_manager_service"]
+
+`
+
+### file_manager/backend.py
+
+`python
+"""Secure physical file operations constrained to the configured file-manager root."""
+
+import json
+import os
+import shutil
+import tempfile
+from pathlib import Path
+
+from editor.editor_operations import PROJECT_ROOT
+
+CONFIG_PATH = Path(__file__).resolve().parent.parent / "tools" / "allowed_paths.json"
+SKIP_DIRECTORIES = {"__pycache__", "_pycache__"}
+
+
+def _read_config() -> dict:
+    if not CONFIG_PATH.is_file():
+        return {}
+    try:
+        config = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            f"Could not read file-manager configuration '{CONFIG_PATH}': {exc}"
+        ) from exc
+    if not isinstance(config, dict):
+        raise RuntimeError(f"File-manager configuration must be a JSON object: {CONFIG_PATH}")
+    return config
+
+
+def configured_roots() -> list[dict[str, str]]:
+    config = _read_config()
+    roots = config.get("file_manager_roots")
+    if roots is None:
+        legacy_path = config.get("file_manager_root", str(PROJECT_ROOT.resolve()))
+        roots = [{"name": "Workspace", "path": legacy_path}]
+    if not isinstance(roots, list):
+        raise RuntimeError("'file_manager_roots' must be a JSON array.")
+
+    result = []
+    names = set()
+    paths = set()
+    for entry in roots:
+        if not isinstance(entry, dict):
+            raise RuntimeError("Each file-manager root must have a name and path.")
+        name = str(entry.get("name", "")).strip()
+        raw_path = os.path.expandvars(str(entry.get("path", ""))).strip()
+        if not name or not raw_path:
+            raise RuntimeError("Each file-manager root must have a non-empty name and path.")
+        root = Path(raw_path).expanduser()
+        if not root.is_absolute():
+            raise RuntimeError(f"File-manager root must be an absolute path: {raw_path}")
+        resolved = root.resolve()
+        if not resolved.is_dir():
+            raise RuntimeError(f"Configured file-manager root is not an existing directory: {resolved}")
+        name_key = name.casefold()
+        path_key = os.path.normcase(str(resolved))
+        if name_key in names or path_key in paths:
+            raise RuntimeError("File-manager root names and paths must be unique.")
+        names.add(name_key)
+        paths.add(path_key)
+        result.append({"name": name, "path": str(resolved)})
+    if not result:
+        raise RuntimeError("Configure at least one entry in 'file_manager_roots'.")
+    return result
+
+
+def active_root_path() -> Path:
+    config = _read_config()
+    roots = configured_roots()
+    selected = config.get(
+        "active_file_manager_root",
+        config.get("file_manager_root", roots[0]["path"]),
+    )
+    for root in roots:
+        if os.path.normcase(root["path"]) == os.path.normcase(str(selected)):
+            return Path(root["path"])
+    raise RuntimeError(
+        "The active file-manager root is not present in 'file_manager_roots'."
+    )
+
+
+def workspace_root() -> Path:
+    return active_root_path()
+
+
+def select_root(path: str) -> dict:
+    roots = configured_roots()
+    selected = next(
+        (root for root in roots if os.path.normcase(root["path"]) == os.path.normcase(path)),
+        None,
+    )
+    if selected is None:
+        raise ValueError("Choose a configured file-manager root.")
+
+    config = _read_config()
+    config["file_manager_roots"] = roots
+    config["active_file_manager_root"] = selected["path"]
+    config["file_manager_root"] = selected["path"]
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=CONFIG_PATH.parent,
+            prefix=f".{CONFIG_PATH.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temp_file:
+            temp_path = Path(temp_file.name)
+            json.dump(config, temp_file, indent=2)
+            temp_file.write("\n")
+        temp_path.replace(CONFIG_PATH)
+    finally:
+        if temp_path is not None and temp_path.exists():
+            temp_path.unlink()
+    return {"roots": roots, "active_path": selected["path"]}
+
+
+def resolve_workspace_path(relative_path: str = "") -> Path:
+    if not isinstance(relative_path, str):
+        raise ValueError("A workspace-relative path is required.")
+
+    clean_path = relative_path.replace("\\", "/")
+    if clean_path.startswith("/") or (len(clean_path) > 1 and clean_path[1] == ":"):
+        raise ValueError("Absolute paths are not allowed.")
+    base_root = workspace_root()
+    parts = Path(clean_path).parts
+    if any(part in {".", ".."} for part in parts):
+        raise ValueError("Relative path traversal is not allowed.")
+    candidate = base_root
+    for part in parts:
+        candidate = candidate / part
+        if candidate.is_symlink():
+            raise ValueError("Symbolic links are not supported by the file manager.")
+    path = candidate.resolve()
+    try:
+        path.relative_to(base_root)
+    except ValueError:
+        raise ValueError("Access outside the workspace is forbidden.") from None
+    return path
+
+
+def list_directory(relative_path: str = "") -> list[dict]:
+    directory = resolve_workspace_path(relative_path)
+    if not directory.is_dir():
+        if directory.exists():
+            raise NotADirectoryError(f"Not a directory: {relative_path}")
+        raise FileNotFoundError(f"Directory not found: {relative_path}")
+
+    entries = []
+    for child in sorted(
+        directory.iterdir(),
+        key=lambda item: (
+            not (not item.is_symlink() and item.is_dir()),
+            item.name.lower(),
+        ),
+    ):
+        if (
+            child.is_symlink()
+            or child.name.startswith(".")
+            or (child.is_dir() and child.name.lower() in SKIP_DIRECTORIES)
+            or (child.is_file() and child.suffix.lower() == ".pyc")
+        ):
+            continue
+        try:
+            resolved = child.resolve()
+            resolved.relative_to(workspace_root())
+        except ValueError:
+            continue
+        if not resolved.exists():
+            continue
+        stat = resolved.stat()
+        entries.append({
+            "name": resolved.name,
+            "path": resolved.relative_to(workspace_root()).as_posix(),
+            "type": "directory" if resolved.is_dir() else "file",
+            "size": 0 if resolved.is_dir() else stat.st_size,
+            "modified": stat.st_mtime,
+        })
+    return entries
+
+
+def directory_tree(relative_path: str = "") -> dict:
+    directory = resolve_workspace_path(relative_path)
+    if not directory.is_dir():
+        if directory.exists():
+            raise NotADirectoryError(f"Not a directory: {relative_path}")
+        raise FileNotFoundError(f"Directory not found: {relative_path}")
+    root = workspace_root()
+    rel_path = directory.relative_to(root).as_posix()
+    node = {
+        "name": directory.name or root.name,
+        "path": "" if rel_path == "." else rel_path,
+        "type": "directory",
+        "children": [],
+    }
+    for item in list_directory(node["path"]):
+        if item["type"] == "directory":
+            node["children"].append(directory_tree(item["path"]))
+        else:
+            node["children"].append({
+                "name": item["name"],
+                "path": item["path"],
+                "type": "file",
+            })
+    return node
+
+
+def read_file(relative_path: str) -> dict:
+    path = resolve_workspace_path(relative_path)
+    if not path.is_file():
+        raise FileNotFoundError(f"File not found: {relative_path}")
+    return {
+        "path": path.relative_to(workspace_root()).as_posix(),
+        "content": path.read_text(encoding="utf-8"),
+    }
+
+
+def write_file(relative_path: str, content: str) -> dict:
+    path = resolve_workspace_path(relative_path)
+    if path.exists() and not path.is_file():
+        raise IsADirectoryError(f"Path is not a file: {relative_path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+    return {
+        "path": path.relative_to(workspace_root()).as_posix(),
+        "bytes_written": len(content.encode("utf-8")),
+    }
+
+
+def create_path(relative_path: str, kind: str = "file") -> dict:
+    path = resolve_workspace_path(relative_path)
+    if path.exists():
+        raise FileExistsError(f"Path already exists: {relative_path}")
+    if kind == "directory":
+        path.mkdir(parents=True)
+    elif kind == "file":
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+    else:
+        raise ValueError("Kind must be 'file' or 'directory'.")
+    return {
+        "path": path.relative_to(workspace_root()).as_posix(),
+        "created": kind,
+    }
+
+
+def delete_path(relative_path: str) -> dict:
+    path = resolve_workspace_path(relative_path)
+    if path == workspace_root():
+        raise ValueError("The workspace root cannot be deleted.")
+    if path.is_dir():
+        shutil.rmtree(path)
+    elif path.is_file():
+        path.unlink()
+    else:
+        raise FileNotFoundError(f"Path not found: {relative_path}")
+    return {"path": relative_path.replace("\\", "/"), "deleted": True}
+
+
+def move_path(source_path: str, destination_path: str) -> dict:
+    source = resolve_workspace_path(source_path)
+    destination = resolve_workspace_path(destination_path)
+    if source == workspace_root():
+        raise ValueError("The workspace root cannot be moved.")
+    if not source.exists():
+        raise FileNotFoundError(f"Path not found: {source_path}")
+    if destination.exists():
+        raise FileExistsError(f"Path already exists: {destination_path}")
+    if source.is_dir():
+        try:
+            destination.relative_to(source)
+        except ValueError:
+            pass
+        else:
+            raise ValueError("A directory cannot be moved into itself.")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(source), str(destination))
+    return {
+        "source_path": source_path.replace("\\", "/"),
+        "destination_path": destination.relative_to(workspace_root()).as_posix(),
+        "moved": True,
+    }
+
+
+def copy_path(source_path: str, destination_path: str) -> dict:
+    source = resolve_workspace_path(source_path)
+    destination = resolve_workspace_path(destination_path)
+    if source == workspace_root():
+        raise ValueError("The workspace root cannot be copied.")
+    if not source.exists():
+        raise FileNotFoundError(f"Path not found: {source_path}")
+    if destination.exists():
+        raise FileExistsError(f"Path already exists: {destination_path}")
+    if source.is_dir():
+        try:
+            destination.relative_to(source)
+        except ValueError:
+            pass
+        else:
+            raise ValueError("A directory cannot be copied into itself.")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source, destination, symlinks=True)
+    else:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    return {
+        "source_path": source_path.replace("\\", "/"),
+        "destination_path": destination.relative_to(workspace_root()).as_posix(),
+        "copied": True,
+    }
+
+`
+
+### file_manager/interface.py
+
+`python
+"""REST and elFinder interfaces for the workspace file manager."""
+
+import base64
+import mimetypes
+from pathlib import PurePosixPath
+
+from fastapi import APIRouter, HTTPException, Request
+
+from file_manager import backend
+from file_manager.schemas import (
+    CreateRequest,
+    FileContentRequest,
+    MoveRequest,
+    PathRequest,
+    SelectRootRequest,
+)
+from file_manager.service import file_manager_service
+
+router = APIRouter()
+
+_VOLUME = "l1_"
+_ELFINDER_API = "2.1"
+
+
+@router.get("/api/file-manager/roots")
+def api_file_manager_roots():
+    return {
+        "roots": backend.configured_roots(),
+        "active_path": str(backend.workspace_root()),
+    }
+
+
+@router.post("/api/file-manager/roots/select")
+def api_select_file_manager_root(request: SelectRootRequest):
+    try:
+        return backend.select_root(request.path)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def _http_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, FileNotFoundError):
+        return HTTPException(status_code=404, detail=str(exc))
+    if isinstance(exc, FileExistsError):
+        return HTTPException(status_code=409, detail=str(exc))
+    if isinstance(exc, IsADirectoryError):
+        return HTTPException(status_code=400, detail=str(exc))
+    if isinstance(exc, NotADirectoryError):
+        return HTTPException(status_code=400, detail=str(exc))
+    if isinstance(exc, (ValueError, PermissionError)):
+        return HTTPException(status_code=400, detail=str(exc))
+    raise exc
+
+
+@router.get("/api/file-manager/list")
+def api_list_directory(path: str = ""):
+    try:
+        return file_manager_service.list_directory(path)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/api/file-manager/tree")
+def api_directory_tree(path: str = ""):
+    try:
+        return file_manager_service.directory_tree(path)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/api/file-manager/read")
+def api_read_file(path: str):
+    try:
+        return file_manager_service.read_file(path)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/api/file-manager/write")
+def api_write_file(request: FileContentRequest):
+    try:
+        return file_manager_service.write_file(request.path, request.content)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/api/file-manager/create")
+def api_create_path(request: CreateRequest):
+    try:
+        return file_manager_service.create(request.path, request.kind)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/api/file-manager/delete")
+def api_delete_path(request: PathRequest):
+    try:
+        return file_manager_service.delete(request.path)
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/api/file-manager/move")
+def api_move_path(request: MoveRequest):
+    try:
+        return file_manager_service.move(
+            request.source_path, request.destination_path
+        )
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        raise _http_error(exc) from exc
+
+
+def _encode_hash(path: str) -> str:
+    normalized = path.strip("/") or "/"
+    token = base64.urlsafe_b64encode(normalized.encode("utf-8")).decode("ascii")
+    return _VOLUME + token.rstrip("=")
+
+
+def _decode_hash(file_hash: str) -> str:
+    if not isinstance(file_hash, str) or not file_hash.startswith(_VOLUME):
+        raise ValueError("Invalid elFinder target.")
+    token = file_hash[len(_VOLUME):]
+    if not token or any(char not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_" for char in token):
+        raise ValueError("Invalid elFinder target.")
+    padded = token + "=" * (-len(token) % 4)
+    try:
+        decoded = base64.b64decode(padded, altchars=b"-_", validate=True).decode("utf-8")
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError("Invalid elFinder target.") from exc
+    if _encode_hash(decoded) != file_hash:
+        raise ValueError("Invalid elFinder target.")
+    return "" if decoded == "/" else decoded
+
+
+def _entry(path: str, entry: dict, parent: str) -> dict:
+    item_hash = _encode_hash(path)
+    is_directory = entry["type"] == "directory"
+    return {
+        "name": entry["name"],
+        "hash": item_hash,
+        "phash": _encode_hash(parent),
+        "volumeid": _VOLUME,
+        "mime": "directory" if is_directory else (
+            mimetypes.guess_type(entry["name"])[0] or "application/octet-stream"
+        ),
+        "ts": int(entry["modified"]),
+        "size": entry["size"],
+        "read": 1,
+        "write": 1,
+        "locked": 0,
+        "dirs": 1 if is_directory else 0,
+        "path": path,
+    }
+
+
+def _directory_contents(path: str) -> list[dict]:
+    listing = file_manager_service.list_directory(path)
+    return [
+        _entry(item["path"], item, path)
+        for item in listing["entries"]
+    ]
+
+
+def _directory_tree(path: str) -> list[dict]:
+    entries = _directory_contents(path)
+    directories = []
+    for entry in entries:
+        if entry["mime"] == "directory":
+            directories.append({
+                "name": entry["name"],
+                "hash": entry["hash"],
+                "phash": entry["phash"],
+                "path": entry["path"],
+            })
+            directories.extend(_directory_tree(entry["path"]))
+    return directories
+
+
+def _file_info(path: str) -> dict:
+    resolved = backend.resolve_workspace_path(path)
+    parent = PurePosixPath(path).parent.as_posix()
+    if parent == ".":
+        parent = ""
+    if resolved.is_dir():
+        entries = file_manager_service.list_directory(path)["entries"]
+        entry = {
+            "name": resolved.name if path else "workspace",
+            "path": path,
+            "type": "directory",
+            "size": 0,
+            "modified": resolved.stat().st_mtime,
+        }
+        info = _entry(path, entry, parent)
+        info["dirs"] = sum(item["type"] == "directory" for item in entries)
+        return info
+    stat = resolved.stat()
+    return _entry(path, {
+        "name": resolved.name,
+        "path": resolved.relative_to(backend.workspace_root()).as_posix(),
+        "type": "file",
+        "size": stat.st_size,
+        "modified": stat.st_mtime,
+    }, parent)
+
+
+def _child_path(parent: str, name: str) -> str:
+    if not name or name in {".", ".."} or "/" in name or "\\" in name or "\x00" in name:
+        raise ValueError("A valid file or directory name is required.")
+    return f"{parent}/{name}" if parent else name
+
+
+def _values(data, key: str) -> list[str]:
+    if hasattr(data, "getlist"):
+        values = data.getlist(f"{key}[]") or data.getlist(key)
+    else:
+        values = data.get(f"{key}[]", data.get(key, []))
+    if isinstance(values, str):
+        return [values]
+    return list(values or [])
+
+
+async def _connector_data(request: Request):
+    if "application/json" in request.headers.get("content-type", ""):
+        return await request.json()
+    return await request.form()
+
+
+@router.post("/api/elfinder/connector")
+async def elfinder_connector(request: Request):
+    data = await _connector_data(request)
+    command = data.get("cmd", "")
+    try:
+        if command == "open":
+            path = _decode_hash(data.get("target", _encode_hash("/")))
+            cwd = _file_info(path)
+            if cwd["mime"] != "directory":
+                raise ValueError("The requested target is not a directory.")
+            return {
+                "cwd": cwd,
+                "files": [cwd, *_directory_contents(path)],
+                "api": _ELFINDER_API,
+                "options": {
+                    "path": path,
+                    "url": "/api/elfinder/connector",
+                    "disabled": [],
+                    "separator": "/",
+                    "archivers": {"create": [], "extract": []},
+                },
+            }
+
+        if command == "tree":
+            path = _decode_hash(data.get("target", _encode_hash("/")))
+            return {"tree": _directory_tree(path)}
+
+        if command == "ls":
+            path = _decode_hash(data.get("target", ""))
+            return {
+                "list": {
+                    item["hash"]: item["name"]
+                    for item in _directory_contents(path)
+                }
+            }
+
+        if command in {"mkfile", "mkdir"}:
+            parent = _decode_hash(data.get("target", ""))
+            name = data.get("name", "")
+            path = _child_path(parent, name)
+            result = file_manager_service.create(
+                path, "directory" if command == "mkdir" else "file"
+            )
+            return {"added": [_file_info(result["path"])]}
+
+        if command == "rename":
+            source = _decode_hash(data.get("target", ""))
+            resolved_source = backend.resolve_workspace_path(source)
+            if not source or not resolved_source.exists():
+                raise FileNotFoundError(f"Path not found: {source}")
+            parent = PurePosixPath(source).parent.as_posix()
+            destination = _child_path("" if parent == "." else parent, data.get("name", ""))
+            result = file_manager_service.move(source, destination)
+            return {"added": [_file_info(result["destination_path"])],
+                    "removed": [_encode_hash(source)]}
+
+        if command == "paste":
+            destination = _decode_hash(data.get("dst", ""))
+            cut = str(data.get("cut", "0")) in {"1", "true", "True"}
+            added = []
+            removed = []
+            for source_hash in _values(data, "src"):
+                source = _decode_hash(source_hash)
+                source_path = backend.resolve_workspace_path(source)
+                target_path = _child_path(destination, source_path.name)
+                result = (
+                    file_manager_service.move(source, target_path)
+                    if cut else file_manager_service.copy(source, target_path)
+                )
+                added.append(_file_info(result["destination_path"]))
+                if cut:
+                    removed.append(source_hash)
+            return {"added": added, "removed": removed}
+
+        if command == "rm":
+            targets = _values(data, "targets")
+            removed = []
+            for target in targets:
+                path = _decode_hash(target)
+                file_manager_service.delete(path)
+                removed.append(target)
+            return {"removed": removed}
+
+        if command == "put":
+            path = _decode_hash(data.get("target", ""))
+            result = file_manager_service.write_file(path, data.get("content", ""))
+            return {"changed": [_file_info(result["path"])]}
+
+        raise ValueError(f"Unsupported elFinder command: {command or '(missing)'}")
+    except (FileNotFoundError, FileExistsError, IsADirectoryError,
+            NotADirectoryError, ValueError, PermissionError) as exc:
+        return {"error": [str(exc)]}
+
+`
+
+### file_manager/schemas.py
+
+`python
+"""Request and response schemas for workspace file operations."""
+
+from pydantic import BaseModel, Field
+
+
+class PathRequest(BaseModel):
+    path: str = Field(..., min_length=1)
+
+
+class FileContentRequest(PathRequest):
+    content: str
+
+
+class CreateRequest(PathRequest):
+    kind: str = Field(default="file", pattern="^(file|directory)$")
+
+
+class MoveRequest(BaseModel):
+    source_path: str = Field(..., min_length=1)
+    destination_path: str = Field(..., min_length=1)
+
+
+class SelectRootRequest(BaseModel):
+    path: str = Field(..., min_length=1)
+
+
+class FileEntry(BaseModel):
+    name: str
+    path: str
+    type: str
+    size: int
+    modified: float
+
+
+class DirectoryListing(BaseModel):
+    path: str
+    entries: list[FileEntry]
+
+`
+
+### file_manager/service.py
+
+`python
+"""Business logic for workspace file management."""
+
+from file_manager import backend
+from file_manager.schemas import DirectoryListing, FileEntry
+
+
+class FileManagerService:
+    """Single service layer shared by REST, elFinder, and agent tools."""
+
+    def list_directory(self, path: str = "") -> dict:
+        entries = backend.list_directory(path)
+        return DirectoryListing(
+            path=path.replace("\\", "/"),
+            entries=[FileEntry(**entry) for entry in entries],
+        ).model_dump()
+
+    def directory_tree(self, path: str = "") -> dict:
+        return backend.directory_tree(path)
+
+    def read_file(self, path: str) -> dict:
+        return backend.read_file(path)
+
+    def write_file(self, path: str, content: str) -> dict:
+        return backend.write_file(path, content)
+
+    def create(self, path: str, kind: str = "file") -> dict:
+        return backend.create_path(path, kind)
+
+    def delete(self, path: str) -> dict:
+        return backend.delete_path(path)
+
+    def move(self, source_path: str, destination_path: str) -> dict:
+        return backend.move_path(source_path, destination_path)
+
+    def copy(self, source_path: str, destination_path: str) -> dict:
+        return backend.copy_path(source_path, destination_path)
+
+
+file_manager_service = FileManagerService()
+
+`
+
+### file_manager/test_file_manager.py
+
+`python
+import base64
+import json
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from file_manager import backend
+from file_manager.interface import router
+
+
+def test_file_manager_uses_configured_root(tmp_path, monkeypatch):
+    root = tmp_path / "configured"
+    root.mkdir()
+    alternate_root = tmp_path / "alternate"
+    alternate_root.mkdir()
+    config = tmp_path / "allowed_paths.json"
+    config.write_text(json.dumps({
+        "map_roots": ["read-only"],
+        "file_manager_roots": [
+            {"name": "Main", "path": str(root)},
+            {"name": "Alternate", "path": str(alternate_root)},
+        ],
+        "active_file_manager_root": str(root),
+    }), encoding="utf-8")
+    monkeypatch.setattr(backend, "CONFIG_PATH", config)
+
+    (root / "__pycache__").mkdir()
+    (root / "__pycache__" / "ignored.pyc").touch()
+    backend.create_path("notes/hello.txt")
+    assert (root / "notes" / "hello.txt").is_file()
+    assert backend.directory_tree()["name"] == root.name
+    assert [entry["name"] for entry in backend.list_directory()] == ["notes"]
+    selected = backend.select_root(str(alternate_root))
+    assert selected["active_path"] == str(alternate_root)
+    assert backend.workspace_root() == alternate_root
+    saved_config = json.loads(config.read_text(encoding="utf-8"))
+    assert saved_config["map_roots"] == ["read-only"]
+    assert saved_config["active_file_manager_root"] == str(alternate_root)
+
+
+def _hash(path: str) -> str:
+    value = path or "/"
+    encoded = base64.urlsafe_b64encode(value.encode()).decode().rstrip("=")
+    return f"l1_{encoded}"
+
+
+def test_workspace_file_operations_and_traversal_rejection(tmp_path, monkeypatch):
+    monkeypatch.setattr(backend, "workspace_root", lambda: tmp_path)
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+
+    assert client.post(
+        "/api/file-manager/create",
+        json={"path": "docs", "kind": "directory"},
+    ).status_code == 200
+    write_response = client.post(
+        "/api/file-manager/write",
+        json={"path": "docs/readme.md", "content": "workspace file"},
+    )
+    assert write_response.json()["bytes_written"] == len("workspace file")
+    assert client.get("/api/file-manager/read", params={"path": "docs/readme.md"}).json() == {
+        "path": "docs/readme.md",
+        "content": "workspace file",
+    }
+
+    listing = client.get("/api/file-manager/list", params={"path": "docs"}).json()
+    assert [entry["name"] for entry in listing["entries"]] == ["readme.md"]
+    assert client.post(
+        "/api/file-manager/move",
+        json={"source_path": "docs/readme.md", "destination_path": "readme.md"},
+    ).json()["moved"]
+    assert client.get("/api/file-manager/read", params={"path": "../outside.txt"}).status_code == 400
+
+
+def test_select_root_only_accepts_configured_directories(tmp_path, monkeypatch):
+    root = tmp_path / "root"
+    root.mkdir()
+    alternate = tmp_path / "alternate"
+    alternate.mkdir()
+    config = tmp_path / "allowed_paths.json"
+    config.write_text(json.dumps({
+        "file_manager_roots": [
+            {"name": "Root", "path": str(root)},
+            {"name": "Alternate", "path": str(alternate)},
+        ],
+        "active_file_manager_root": str(root),
+    }), encoding="utf-8")
+    monkeypatch.setattr(backend, "CONFIG_PATH", config)
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+
+    assert client.get("/api/file-manager/roots").json() == {
+        "roots": [
+            {"name": "Root", "path": str(root)},
+            {"name": "Alternate", "path": str(alternate)},
+        ],
+        "active_path": str(root),
+    }
+    assert client.post(
+        "/api/file-manager/roots/select",
+        json={"path": str(tmp_path)},
+    ).status_code == 400
+    assert client.post(
+        "/api/file-manager/roots/select",
+        json={"path": str(alternate)},
+    ).json()["active_path"] == str(alternate)
+    assert client.get("/api/file-manager/tree").json()["name"] == "alternate"
+
+
+def test_elfinder_open_and_put_use_the_shared_workspace_service(tmp_path, monkeypatch):
+    monkeypatch.setattr(backend, "workspace_root", lambda: tmp_path)
+    app = FastAPI()
+    app.include_router(router)
+    client = TestClient(app)
+
+    opened = client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "open", "target": _hash("")},
+    ).json()
+    assert opened["cwd"]["hash"] == _hash("")
+
+    created = client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "mkfile", "target": _hash(""), "name": "note.txt"},
+    ).json()
+    target_hash = created["added"][0]["hash"]
+    updated = client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "put", "target": target_hash, "content": "from elFinder"},
+    ).json()
+
+    assert updated["changed"][0]["path"] == "note.txt"
+    assert client.get(
+        "/api/file-manager/read", params={"path": "note.txt"}
+    ).json()["content"] == "from elFinder"
+
+    folder = client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "mkdir", "target": _hash(""), "name": "folder"},
+    ).json()["added"][0]
+    assert client.post(
+        "/api/elfinder/connector",
+        data={
+            "cmd": "paste",
+            "src[]": target_hash,
+            "dst": folder["hash"],
+            "cut": "0",
+        },
+    ).json()["added"][0]["path"] == "folder/note.txt"
+
+    renamed = client.post(
+        "/api/elfinder/connector",
+        data={
+            "cmd": "rename",
+            "target": _hash("folder/note.txt"),
+            "name": "renamed.txt",
+        },
+    ).json()
+    assert renamed["added"][0]["path"] == "folder/renamed.txt"
+    assert client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "tree", "target": _hash("")},
+    ).json()["tree"][0]["hash"] == _hash("folder")
+    assert "note.txt" in client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "ls", "target": _hash("")},
+    ).json()["list"].values()
+
+    moved = client.post(
+        "/api/elfinder/connector",
+        data={
+            "cmd": "paste",
+            "src[]": target_hash,
+            "dst": folder["hash"],
+            "cut": "1",
+        },
+    ).json()
+    assert moved["added"][0]["path"] == "folder/note.txt"
+    assert moved["removed"] == [target_hash]
+
+    assert client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "rm", "targets[]": _hash("folder")},
+    ).json()["removed"] == [_hash("folder")]
+
+    rejected = client.post(
+        "/api/elfinder/connector",
+        data={"cmd": "rm", "targets[]": _hash("")},
+    ).json()
+    assert "error" in rejected
+
+`
+
 ### frontend/pages/chat.html
 
 `html
@@ -3345,7 +4341,6 @@ async def api_ws(websocket: WebSocket):
     </main>
   </div>
 
-  <script src="https://unpkg.com/lucide@latest" defer></script>
   <script type="module">
     import { renderChatView } from '/static/js/chat.js';
     renderChatView(document.getElementById('view-container'));
@@ -3408,6 +4403,8 @@ async def api_ws(websocket: WebSocket):
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editor — Novous2 Agent Factory</title>
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/codebuilder.css">
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.min.js"></script>
 </head>
 <body class="bg-dark text-light">
   <div class="app-container">
@@ -3433,7 +4430,10 @@ async def api_ws(websocket: WebSocket):
   <script type="module">
     import { renderEditorView } from '/static/js/editor.js';
     const params = new URLSearchParams(location.search);
-    renderEditorView(document.getElementById('view-container'), params.get('path'));
+    const path = params.get('path');
+    renderEditorView(document.getElementById('view-container'), path
+      ? { path, managedFile: params.get('managed') === '1' }
+      : null);
   </script>
 </body>
 </html>
@@ -4446,7 +5446,23 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 .btn-ghost { background: transparent; border: none; color: var(--text-muted); }
 .btn-ghost:hover { color: var(--danger); }
 .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.chat-layout .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.chat-layout .btn:hover:not(:disabled) { border-color: var(--primary); }
+.chat-layout .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+.chat-layout .btn-ghost:hover:not(:disabled) { color: var(--danger); }
+.chat-layout .btn:disabled:hover { border-color: var(--border-color); }
+.chat-layout .btn-ghost:disabled:hover { color: var(--text-muted); }
+.chat-layout .btn:disabled {
+  opacity: 0.42;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+.chat-icon { display: inline-block; flex: 0 0 auto; vertical-align: middle; }
 
 .form-input, .form-select, textarea {
   background: var(--bg-elev);
@@ -4529,7 +5545,33 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
   min-height: 0;
 }
 .sidebar-title { margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
-.editor-sidebar .tree-pane { flex: 1; border: none; background: transparent; }
+.editor-sidebar .tree-pane { flex: 1; min-height: 0; border: none; background: transparent; display: flex; flex-direction: column; }
+.editor-sidebar .tree-toolbar { padding: 0.2rem 0 0.55rem; gap: 0.35rem; }
+.editor-sidebar .tree-toolbar .btn { flex: 1; min-width: 0; padding: 0.35rem 0.4rem; }
+.editor-sidebar .tree-toolbar [data-action="refresh"] { flex: 0 0 34px; font-size: 1rem; }
+.tree-root-picker { display: flex; flex-direction: column; gap: 0.3rem; padding: 0 0 0.55rem; font-size: 0.75rem; color: var(--text-muted); }
+.tree-root-picker .form-select { width: 100%; padding: 0.38rem 0.5rem; font-size: 0.8rem; }
+.tree-root-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: Consolas, monospace; font-size: 0.68rem; }
+.dash-agent-card { grid-column: 1; grid-row: 1; }
+.dash-squad-card { grid-column: 1; grid-row: 2; }
+.dash-health-card { grid-column: 1; grid-row: 3; }
+.dash-tree-card { grid-column: 2; grid-row: 1 / span 3; min-height: 0; }
+.dash-tree-card .tree-pane { height: min(62vh, 560px); display: flex; flex-direction: column; }
+.dash-tree-card .tree-toolbar { padding: 0.4rem 0; }
+.dash-tree-card .tree-body { flex: 1; overflow: auto; }
+.tree-root-label { padding: 0.45rem 0.55rem; color: var(--text-muted); font-size: 0.77rem; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+.editor-sidebar .tree-body { flex: 1; min-height: 0; overflow: auto; padding: 0.35rem 0; }
+.tree-message { padding: 0.5rem; margin: 0; font-size: 0.82rem; }
+.tree-row { min-width: 0; gap: 0.25rem; padding: 0.22rem 0.35rem; border-radius: 5px; }
+.tree-toggle { width: 16px; height: 20px; padding: 0; border: 0; background: none; color: var(--text-muted); cursor: pointer; flex: 0 0 16px; }
+.tree-toggle:disabled { cursor: default; }
+.tree-icon { width: 18px; flex: 0 0 18px; font-size: 0.78rem; }
+.tree-icon.directory::before { content: "▰"; color: var(--primary); }
+.tree-icon.file::before { content: "▤"; color: var(--text-muted); }
+.tree-name { flex: 1; min-width: 0; font-size: 0.81rem; }
+.tree-delete { width: 21px; height: 21px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--text-muted); font-size: 1rem; line-height: 1; cursor: pointer; opacity: 0; }
+.tree-row:hover .tree-delete, .tree-delete:focus-visible { opacity: 1; }
+.tree-delete:hover { background: rgba(239, 68, 68, 0.18); color: var(--danger); }
 .event-export { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.6rem; }
 
 .editor-main {
@@ -4543,20 +5585,12 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 }
 .editor-toolbar { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-color); }
 .editor-path { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.85rem; color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.editor-textarea {
+.editor-monaco {
   flex: 1;
   width: 100%;
-  border: none;
-  border-radius: 0;
-  resize: none;
-  padding: 0.9rem 1rem;
-  font-family: 'SFMono-Regular', Consolas, 'Courier New', monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  background: var(--bg-dark);
-  tab-size: 2;
+  min-height: 0;
+  overflow: hidden;
 }
-.editor-textarea:focus { outline: none; }
 .editor-status { display: flex; padding: 0.35rem 0.75rem; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
 
 .workspace-save-dialog {
@@ -4600,22 +5634,36 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 /* --- Chat ----------------------------------------------------------------- */
 .chat-layout {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 330px;
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr) minmax(280px, 330px);
+  grid-template-rows: minmax(0, 1fr);
   height: calc(100vh - 110px);
+  min-height: 0;
   gap: 0.75rem;
 }
-.chat-sidebar {
+.chat-layout > * { min-height: 0; overflow: hidden; }
+.chat-file-sidebar {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 1rem;
+  padding: 0.7rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  overflow-y: auto;
+  min-height: 0;
 }
-.chat-sidebar h3 { margin: 0; font-size: 0.95rem; }
-.chat-sidebar-actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+.chat-file-header { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.15rem 0.15rem 0.65rem; }
+.chat-file-header h3 { margin: 0; font-size: 0.95rem; }
+.chat-file-sidebar .tree-pane { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.chat-file-sidebar .tree-toolbar { padding: 0.4rem; }
+.chat-file-sidebar .tree-toolbar .btn { flex: 1; min-width: 0; padding: 0.35rem 0.4rem; }
+.chat-file-sidebar .tree-toolbar [data-action="refresh"] { flex: 0 0 34px; font-size: 1rem; }
+.chat-file-sidebar .tree-body { flex: 1; min-height: 0; overflow: auto; }
+.chat-controls { display: flex; flex-direction: column; gap: 0.65rem; border-top: 1px solid var(--border-color); padding-top: 1rem; }
+.chat-controls-title { margin: 0; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.chat-field-label { margin-bottom: -0.45rem; font-size: 0.78rem; color: var(--text-muted); }
+.chat-agent-meta { padding: 0.7rem; font-size: 0.82rem; }
+.chat-agent-meta p { margin: 0; }
+.chat-session-buttons { display: flex; flex-direction: column; gap: 0.5rem; }
+.chat-session-buttons .btn { justify-content: center; }
 
 .model-picker { display: flex; flex-direction: column; gap: 0.25rem; }
 .model-picker-label { font-size: 0.8rem; color: var(--text-muted); }
@@ -4663,6 +5711,7 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 
 .chat-input-bar { display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); }
 .chat-input-bar input { flex: 1; }
+.chat-quick-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.6rem; flex-shrink: 0; }
 
 .tool-badge {
   font-size: 0.85rem;
@@ -4674,6 +5723,21 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 }
 .tool-badge.error { border-color: rgba(239, 68, 68, 0.5); color: var(--danger); }
 .tool-badge.success { border-color: rgba(34, 197, 94, 0.4); }
+.tool-badge.has-tree { align-self: stretch; max-width: 100%; }
+.tree-view {
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: Consolas, 'Cascadia Mono', 'Segoe UI Emoji', monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre;
+  overflow: auto;
+  max-height: 420px;
+}
+.tree-more { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
 
 /* --- Testing -------------------------------------------------------------- */
 .testing-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; height: calc(100vh - 110px); }
@@ -4961,6 +6025,7 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
 @media (max-width: 1100px) {
   .editor-layout { grid-template-columns: 220px 1fr; }
   .editor-events { display: none; }
+  .chat-layout { grid-template-columns: minmax(210px, 240px) minmax(0, 1fr) minmax(270px, 300px); gap: 0.5rem; }
   .testing-layout { grid-template-columns: 1fr; height: auto; }
   .prompt-creation-flow { display: flex; flex-direction: column; }
   .prompt-chat-card {
@@ -4976,11 +6041,22 @@ a.nav-btn { display: inline-flex; align-items: center; text-decoration: none; }
   .prompt-markdown-draft-card { width: 100%; }
   .prompt-result-card .toolbar-row { flex-wrap: wrap; }
   .dash-grid { grid-template-columns: 1fr; }
+  .dash-agent-card, .dash-squad-card, .dash-health-card, .dash-tree-card { grid-column: 1; grid-row: auto; }
+  .dash-tree-card .tree-pane { height: 340px; }
 }
 @media (max-width: 820px) {
   .navbar { flex-wrap: wrap; }
-  .chat-layout { grid-template-columns: 1fr; height: auto; }
-  .messages-scroll { max-height: 50vh; }
+  .editor-layout { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .editor-sidebar { min-height: 260px; max-height: 40vh; }
+  .editor-main { min-height: 55vh; }
+  .tree-delete { opacity: 1; }
+  .chat-layout { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
+  .chat-layout > * { overflow: visible; }
+  .chat-file-sidebar { min-height: 260px; max-height: 40vh; }
+  .chat-main { order: -1; height: calc(100vh - 150px); min-height: 420px; }
+  .test-panel { width: 100%; min-width: 0; min-height: 360px; border-left: 0; border-top: 1px solid var(--border-color); }
+  .messages-scroll { min-height: 0; }
+  .chat-input-bar { flex-shrink: 0; }
   .tool-workbench-grid { grid-template-columns: 1fr; }
   .tool-workbench-wide { grid-column: auto; }
 }
@@ -5193,6 +6269,12 @@ export const Api = {
     });
   },
 
+  async mapFolderPage(path, maxDepth, includeFiles, offset) {
+    return send('POST', '/api/tools/map-page', {
+      path, max_depth: maxDepth, include_files: includeFiles, offset
+    });
+  },
+
   async resetChat(sessionId) {
     return send('POST', `/api/chat/reset?session_id=${encodeURIComponent(sessionId)}`);
   },
@@ -5271,6 +6353,34 @@ export const Api = {
 
   async readFile(path) {
     return get(`/api/file/read?path=${encodeURIComponent(path)}`);
+  },
+
+  async readManagedFile(path) {
+    return get(`/api/file-manager/read?path=${encodeURIComponent(path)}`);
+  },
+
+  async getManagedFileTree(path = '') {
+    return get(`/api/file-manager/tree?path=${encodeURIComponent(path)}`);
+  },
+
+  async getFileManagerRoots() {
+    return get('/api/file-manager/roots');
+  },
+
+  async selectFileManagerRoot(path) {
+    return send('POST', '/api/file-manager/roots/select', { path });
+  },
+
+  async writeManagedFile(path, content) {
+    return send('POST', '/api/file-manager/write', { path, content });
+  },
+
+  async createManagedPath(path, kind = 'file') {
+    return send('POST', '/api/file-manager/create', { path, kind });
+  },
+
+  async deleteManagedPath(path) {
+    return send('POST', '/api/file-manager/delete', { path });
   },
 
   async writeFile(path, content) {
@@ -5388,9 +6498,9 @@ export const Api = {
     return send('POST', '/api/testing/evaluate_markdown', { markdown, agent_id: agentId });
   },
 
-  async publishAgent(agentId, label = '', markdown, environment = 'workspace') {
+  async publishAgent(agentId, label = '', markdown, environment = 'workspace', tools = []) {
     return send('POST', '/api/testing/publish', {
-      agent_id: agentId, label, markdown, environment
+      agent_id: agentId, label, markdown, environment, tools
     });
   },
 
@@ -5456,7 +6566,7 @@ function renderDashboardView(container) {
       </section>
 
       <div class="dash-grid">
-        <section class="card">
+        <section class="card dash-agent-card">
           <div class="card-head">
             <h3>Agents</h3>
             <button class="btn btn-sm btn-primary" id="dash-new-agent">+ New Agent</button>
@@ -5497,7 +6607,7 @@ function renderDashboardView(container) {
           </div>
         </section>
 
-        <section class="card">
+        <section class="card dash-squad-card">
           <div class="card-head">
             <h3>Squads</h3>
             <button class="btn btn-sm btn-primary" id="dash-new-squad">+ New Squad</button>
@@ -5514,12 +6624,17 @@ function renderDashboardView(container) {
           </ul>
         </section>
 
-        <section class="card">
-          <div class="card-head"><h3>Workspace Tree</h3></div>
+        <section class="card dash-tree-card">
+          <div class="card-head">
+            <div>
+              <h3>Workspace Tree</h3>
+              <p class="text-muted small">Choose a configured folder. Add named paths under <code>file_manager_roots</code> in <code>tools/allowed_paths.json</code>.</p>
+            </div>
+          </div>
           <div id="dash-tree" class="tree-pane tree-pane-sm"></div>
         </section>
 
-        <section class="card">
+        <section class="card dash-health-card">
           <div class="card-head"><h3>System Health</h3></div>
           <div id="dash-health" class="health-panel">Checking…</div>
         </section>
@@ -5685,7 +6800,10 @@ function renderDashboardView(container) {
     catch (err) { alert(err.message); }
   });
 
-  renderTree(container.querySelector('#dash-tree'), { onSelect: (path) => switchTab('editor', path) });
+  renderTree(container.querySelector('#dash-tree'), {
+    manageRoots: true,
+    onSelect: path => switchTab('editor', { path, managedFile: true })
+  });
 
   const healthBox = container.querySelector('#dash-health');
   Api.getHealth().then(h => {
@@ -5731,6 +6849,13 @@ export function switchTab(tab, payload = null) {
   if (renderer) renderer(container, payload);
 }
 
+window.addEventListener('novous:open-editor', event => {
+  const file = event.detail;
+  if (file && typeof file.path === 'string') {
+    switchTab('editor', { path: file.path, managedFile: file.managedFile === true });
+  }
+});
+
 async function boot() {
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
@@ -5762,7 +6887,9 @@ boot();
 
 `javascript
 import { Api } from './api.js';
+import { createIcon } from './icons.js';
 import { buildTestPanel } from './test_panel.js';
+import { renderTree } from './tree.js';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -5779,27 +6906,12 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 export function renderChatView(container) {
   container.innerHTML = `
     <div class="chat-layout">
-      <aside class="chat-sidebar">
-        <h3>Agents Workspace</h3>
-        <select id="chat-agent-select" class="form-select">
-          <option value="">Loading agents...</option>
-        </select>
-        <div id="agent-meta-card" class="card mt-3">
-          <p class="text-muted">Select an agent to begin chatting.</p>
+      <aside class="chat-file-sidebar">
+        <div class="chat-file-header">
+          <h3>Workspace Files</h3>
+          <span class="text-muted small">Open a file in the editor</span>
         </div>
-        <div class="chat-sidebar-actions">
-          <label class="checkbox-row">
-            <input type="checkbox" id="chat-use-tools" checked>
-            <span>Attach tools (agent mode)</span>
-          </label>
-          <button class="btn btn-sm btn-primary" id="chat-save-log">Save Session Log (.md)</button>
-          <label class="model-picker">
-            <span class="model-picker-label">Model <span id="model-count" class="text-muted small"></span></span>
-            <select id="chat-model-select" class="form-select"><option value="">Detecting models…</option></select>
-          </label>
-          <button class="btn btn-sm" id="chat-reset">Reset session</button>
-        </div>
-        <div id="chat-session-info" class="text-muted small mt-3"></div>
+        <div id="chat-file-tree" class="tree-pane"></div>
       </aside>
 
       <section class="chat-main">
@@ -5808,16 +6920,45 @@ export function renderChatView(container) {
         </div>
         <form id="chat-form" class="chat-input-bar">
           <input type="text" id="chat-input" placeholder="Type a message or instruction..." autocomplete="off" required />
-          <button type="submit" class="btn btn-primary">Send</button>
+          <button type="submit" class="btn btn-primary" disabled>Send</button>
         </form>
+        <div class="chat-quick-actions">
+          <button type="button" class="btn btn-sm" id="chat-reset-quick" disabled>Reset session</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 2</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 3</button>
+          <button type="button" class="btn btn-sm" disabled title="Coming soon">Action 4</button>
+        </div>
       </section>
 
       <aside class="test-panel">
         <div class="test-panel-header">
-          <span class="test-panel-title">Test</span>
+          <span class="test-panel-title">Chat & Test Controls</span>
         </div>
         <div class="test-panel-content">
           <div id="testPanelButtons" class="test-grid"></div>
+          <section class="chat-controls">
+            <h3 class="chat-controls-title">Chat settings</h3>
+            <label class="chat-field-label" for="chat-agent-select">Agent</label>
+            <select id="chat-agent-select" class="form-select">
+              <option value="">Loading agents...</option>
+            </select>
+            <div id="agent-meta-card" class="card chat-agent-meta">
+              <p class="text-muted">Select an agent to begin chatting.</p>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="chat-use-tools" checked>
+              <span>Attach tools (agent mode)</span>
+            </label>
+            <label class="model-picker">
+              <span class="model-picker-label">Model <span id="model-count" class="text-muted small"></span></span>
+              <select id="chat-model-select" class="form-select" disabled><option value="">Detecting models…</option></select>
+            </label>
+            <div class="chat-session-buttons">
+              <button class="btn btn-sm btn-primary" id="chat-save-log" disabled>Save Session Log (.md)</button>
+              <button class="btn btn-sm" id="chat-reset" disabled>Reset session</button>
+            </div>
+            <div id="chat-session-info" class="text-muted small"></div>
+          </section>
         </div>
       </aside>
     </div>`;
@@ -5827,6 +6968,10 @@ export function renderChatView(container) {
   const messagesBox = container.querySelector('#chat-messages');
   const chatForm = container.querySelector('#chat-form');
   const chatInput = container.querySelector('#chat-input');
+  const sendButton = chatForm.querySelector('[type="submit"]');
+  const saveLogButton = container.querySelector('#chat-save-log');
+  const resetButton = container.querySelector('#chat-reset');
+  const quickResetButton = container.querySelector('#chat-reset-quick');
   const toolsToggle = container.querySelector('#chat-use-tools');
   const sessionInfo = container.querySelector('#chat-session-info');
   const modelSelect = container.querySelector('#chat-model-select');
@@ -5835,6 +6980,37 @@ export function renderChatView(container) {
   let agents = [];
   let installedModels = [];
   let currentModel = 'qwen2.5-coder:latest';
+  let isSending = false;
+  let isResetting = false;
+  let isSavingLog = false;
+
+  container.querySelector('#chat-save-log').prepend(createIcon('save'));
+  container.querySelector('#chat-reset').prepend(createIcon('reset'));
+  sendButton.prepend(createIcon('send'));
+
+  renderTree(container.querySelector('#chat-file-tree'), {
+    manageRoots: true,
+    onSelect: path => {
+      if (document.getElementById('app')) {
+        window.dispatchEvent(new CustomEvent('novous:open-editor', {
+          detail: { path, managedFile: true }
+        }));
+      } else {
+        const params = new URLSearchParams({ path, managed: '1' });
+        window.location.assign(`/editor?${params}`);
+      }
+    }
+  });
+
+  function syncActionButtons() {
+    const hasAgent = agents.some(agent => agent.id === agentSelect.value);
+    saveLogButton.disabled = !hasAgent || isSavingLog;
+    resetButton.disabled = !hasAgent || isResetting;
+    quickResetButton.disabled = resetButton.disabled;
+    const wipeButton = container.querySelector('[data-test-function="wipeChat"]');
+    if (wipeButton) wipeButton.disabled = !hasAgent || isResetting;
+    sendButton.disabled = !hasAgent || modelSelect.disabled || !chatInput.value.trim() || isSending;
+  }
 
   Api.getModels().then(data => {
     installedModels = (data.models || []).sort();
@@ -5842,6 +7018,8 @@ export function renderChatView(container) {
       modelCount.textContent = '(none installed)';
       modelSelect.innerHTML = '<option value="">No models found — run: ollama pull</option>';
       modelSelect.disabled = true;
+      syncActionButtons();
+      syncTodoRunButton();
       return;
     }
     modelCount.textContent = `(${installedModels.length} installed)`;
@@ -5849,9 +7027,14 @@ export function renderChatView(container) {
       .map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
     modelSelect.disabled = false;
     syncModelSelect();
+    syncActionButtons();
+    syncTodoRunButton();
   }).catch(err => {
     modelCount.textContent = '(error)';
     modelSelect.innerHTML = `<option value="">Model list unavailable: ${esc(err.message)}</option>`;
+    modelSelect.disabled = true;
+    syncActionButtons();
+    syncTodoRunButton();
   });
 
   function syncModelSelect() {
@@ -5867,6 +7050,7 @@ export function renderChatView(container) {
 
   modelSelect.addEventListener('change', () => {
     currentModel = modelSelect.value;
+    syncActionButtons();
   });
 
   Api.getAgents().then(data => {
@@ -5881,13 +7065,17 @@ export function renderChatView(container) {
       updateAgentMeta(agentSelect.value);
       syncModelSelect();
     }
+    syncActionButtons();
+    syncTodoRunButton();
   }).catch(err => {
     agentSelect.innerHTML = `<option value="">Error: ${esc(err.message)}</option>`;
   });
 
   agentSelect.addEventListener('change', (e) => {
     try { localStorage.setItem('novous2.chat.lastAgent', e.target.value); } catch { /* storage unavailable */ }
-    updateAgentMeta(e.target.value); syncModelSelect(); });
+    updateAgentMeta(e.target.value); syncModelSelect(); syncActionButtons(); syncTodoRunButton(); });
+
+  chatInput.addEventListener('input', syncActionButtons);
 
   function updateAgentMeta(id) {
     const agent = agents.find(a => a.id === id);
@@ -5910,12 +7098,18 @@ export function renderChatView(container) {
       appendMessage('system', 'Select an agent before resetting the chat.');
       return;
     }
+    if (isResetting) return;
 
+    isResetting = true;
+    syncActionButtons();
     try {
       await Api.resetChat(`chat-${agentId}`);
       messagesBox.innerHTML = `<div class="message system-msg">${esc(message)}</div>`;
     } catch (err) {
       appendMessage('system', 'Reset failed: ' + err.message);
+    } finally {
+      isResetting = false;
+      syncActionButtons();
     }
   }
 
@@ -5938,10 +7132,23 @@ export function renderChatView(container) {
   }
 
   let todoFilesLoading = false;
+  let todoRunInProgress = false;
+
+  function syncTodoRunButton() {
+    const button = container.querySelector('[data-test-function="runTestSuite"]');
+    const select = container.querySelector('#todo-file-select');
+    if (!button) return;
+    const hasAgent = agents.some(agent => agent.id === agentSelect.value);
+    button.disabled = todoFilesLoading || todoRunInProgress || !hasAgent ||
+      modelSelect.disabled || !select?.value;
+  }
+
   async function loadTodoFiles(silent = false) {
     const select = container.querySelector('#todo-file-select');
     if (!select || todoFilesLoading) return;
     todoFilesLoading = true;
+    const refreshButton = container.querySelector('#todo-file-refresh');
+    if (refreshButton) refreshButton.disabled = true;
 
     try {
       const tree = await Api.getFileTree();
@@ -6003,6 +7210,8 @@ export function renderChatView(container) {
       }
     } finally {
       todoFilesLoading = false;
+      if (refreshButton) refreshButton.disabled = false;
+      syncTodoRunButton();
     }
   }
 
@@ -6020,8 +7229,8 @@ export function renderChatView(container) {
       return;
     }
 
-    const runButton = container.querySelector('[data-test-function="runTestSuite"]');
-    if (runButton) runButton.disabled = true;
+    todoRunInProgress = true;
+    syncTodoRunButton();
 
     try {
       const fileData = await Api.readFile(selectedPath);
@@ -6048,7 +7257,7 @@ export function renderChatView(container) {
           const response = await Api.sendMessage(line, agentId, model, sessionId);
           removeMessage(thinkingId);
           (response.tool_events || []).forEach(event =>
-            appendToolBadge(event.tool, event.status, event.args)
+            appendToolBadge(event.tool, event.status, event.args, event.display)
           );
           appendMessage('assistant', response.reply);
         } catch (err) {
@@ -6061,18 +7270,23 @@ export function renderChatView(container) {
     } catch (err) {
       appendMessage('system', `Error reading or running To-Do file: ${err.message}`);
     } finally {
-      if (runButton) runButton.disabled = false;
+      todoRunInProgress = false;
+      syncTodoRunButton();
     }
   }
 
   container.querySelector('#chat-reset').addEventListener('click', () => resetSession());
+  quickResetButton.addEventListener('click', () => resetSession());
   container.querySelector('#chat-save-log').addEventListener('click', async () => {
     const agentId = agentSelect.value;
     if (!agentId) {
       alert('Select an agent before saving the session log.');
       return;
     }
+    if (isSavingLog) return;
 
+    isSavingLog = true;
+    syncActionButtons();
     try {
       const res = await Api.exportSession(`chat-${agentId}`);
       alert(res.locationChosen
@@ -6080,6 +7294,9 @@ export function renderChatView(container) {
         : `Session log download started: ${res.filename}\n\nChoose the save location in your browser's download settings.`);
     } catch (err) {
       if (err.name !== 'AbortError') alert(`Failed to save session: ${err.message}`);
+    } finally {
+      isSavingLog = false;
+      syncActionButtons();
     }
   });
   buildTestPanel('testPanelButtons', {
@@ -6090,6 +7307,8 @@ export function renderChatView(container) {
   loadTodoFiles();
   container.querySelector('#todo-file-refresh')
     ?.addEventListener('click', () => loadTodoFiles());
+  container.querySelector('#todo-file-select')
+    ?.addEventListener('change', syncTodoRunButton);
   const todoRefreshInterval = setInterval(() => {
     if (!container.isConnected) {
       clearInterval(todoRefreshInterval);
@@ -6127,6 +7346,8 @@ export function renderChatView(container) {
 
     appendMessage('user', text);
     chatInput.value = '';
+    isSending = true;
+    syncActionButtons();
 
     const thinkingId = appendMessage('assistant', 'Thinking...', true);
 
@@ -6136,13 +7357,16 @@ export function renderChatView(container) {
       removeMessage(thinkingId);
 
       if (res.tool_events && res.tool_events.length > 0) {
-        res.tool_events.forEach(evt => appendToolBadge(evt.tool, evt.status, evt.args));
+        res.tool_events.forEach(evt => appendToolBadge(evt.tool, evt.status, evt.args, evt.display));
       }
 
       appendMessage('assistant', res.reply);
     } catch (err) {
       removeMessage(thinkingId);
       appendMessage('system', 'Error communicating with engine: ' + err.message);
+    } finally {
+      isSending = false;
+      syncActionButtons();
     }
   });
 
@@ -6158,16 +7382,18 @@ export function renderChatView(container) {
 
     if (!isTemporary && role !== 'system') {
       const copyButton = document.createElement('button');
+      const copyLabel = document.createElement('span');
       copyButton.type = 'button';
       copyButton.className = 'btn btn-sm btn-ghost msg-copy-btn';
-      copyButton.innerText = 'Copy';
+      copyLabel.textContent = 'Copy';
+      copyButton.append(createIcon('copy'), copyLabel);
       copyButton.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(content);
-          copyButton.innerText = 'Copied!';
-          setTimeout(() => { copyButton.innerText = 'Copy'; }, 2000);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
         } catch (err) {
-          copyButton.innerText = 'Copy failed';
+          copyLabel.textContent = 'Copy failed';
         }
       });
       msgDiv.appendChild(copyButton);
@@ -6183,14 +7409,63 @@ export function renderChatView(container) {
     if (el) el.remove();
   }
 
-  function appendToolBadge(toolName, status, args) {
+  function appendToolBadge(toolName, status, args, display) {
     const badgeDiv = document.createElement('div');
     badgeDiv.className = `tool-badge ${status}`;
     const argText = args ? JSON.stringify(args) : '';
     badgeDiv.innerHTML = `🛠️ <strong>${esc(toolName)}</strong> executed (${esc(status)})
       ${argText ? `<span class="text-muted small"> ${esc(argText.slice(0, 120))}</span>` : ''}`;
+    if (display) appendTreeView(badgeDiv, args || {}, display);
     messagesBox.appendChild(badgeDiv);
     messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  const MORE_NOTE = /\n… (\d+) more lines \(next offset (\d+)\)\s*$/;
+
+  function appendTreeView(badgeDiv, args, display) {
+    const pre = document.createElement('pre');
+    pre.className = 'tree-view';
+    badgeDiv.classList.add('has-tree');
+    badgeDiv.appendChild(pre);
+
+    const showPage = (text) => {
+      const match = text.match(MORE_NOTE);
+      pre.textContent += (pre.textContent ? '\n' : '') + text.replace(MORE_NOTE, '');
+      return match ? { remaining: Number(match[1]), next: Number(match[2]) } : null;
+    };
+
+    const renderMoreControl = (more) => {
+      badgeDiv.querySelector('.tree-more')?.remove();
+      if (!more) return;
+      const bar = document.createElement('div');
+      bar.className = 'tree-more';
+      const label = document.createElement('span');
+      label.className = 'text-muted small';
+      label.textContent = `${more.remaining} more lines. Show more?`;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-sm btn-primary';
+      button.textContent = 'Show more';
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const page = await Api.mapFolderPage(
+            args.path, args.max_depth ?? 3, args.include_files ?? true, more.next
+          );
+          pre.textContent += '\n' + page.text;
+          renderMoreControl(page.remaining
+            ? { remaining: page.remaining, next: page.next_offset } : null);
+        } catch (err) {
+          label.textContent = `Could not load more: ${err.message}`;
+          button.disabled = false;
+        }
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+      });
+      bar.append(label, button);
+      badgeDiv.appendChild(bar);
+    };
+
+    renderMoreControl(showPage(display));
   }
 }
 
@@ -6234,9 +7509,12 @@ function openQuestionDialogModal(requestId, questions) {
       <div class="question-dialog-actions">
         <button type="button" id="dialog-prev-btn" class="btn btn-sm" ${currentIndex === 0 ? 'disabled' : ''}>Back</button>
         <button type="button" id="dialog-next-btn" class="btn btn-sm btn-primary">
-          ${isLast ? 'Submit All Answers' : 'Next Question'}
+          <span>${isLast ? 'Submit All Answers' : 'Next Question'}</span>
         </button>
       </div>`;
+
+    modal.querySelector('#dialog-prev-btn').prepend(createIcon('reset'));
+    modal.querySelector('#dialog-next-btn').prepend(createIcon(isLast ? 'check-square' : 'send'));
 
     const textarea = modal.querySelector('#dialog-answer-input');
     textarea.value = userAnswers[qId] ?? '';
@@ -6260,13 +7538,13 @@ function openQuestionDialogModal(requestId, questions) {
 
       const nextBtn = modal.querySelector('#dialog-next-btn');
       nextBtn.disabled = true;
-      nextBtn.textContent = 'Submitting...';
+      nextBtn.querySelector('span').textContent = 'Submitting...';
       try {
         await Api.submitAnswers(requestId, userAnswers);
         overlay.remove();
       } catch (err) {
         nextBtn.disabled = false;
-        nextBtn.textContent = 'Submit All Answers';
+        nextBtn.querySelector('span').textContent = 'Submit All Answers';
         modal.querySelector('.question-dialog-error').textContent = `Submission failed: ${err.message}`;
       }
     };
@@ -7378,21 +8656,37 @@ function createTextareaEditor(element, initialValue) {
   textarea.setAttribute('aria-label', 'Python source code');
   element.replaceChildren(textarea);
   let runHandler = null;
+  let saveHandler = null;
   let changeHandler = null;
+  let positionHandler = null;
   textarea.addEventListener('input', () => changeHandler?.());
+  textarea.addEventListener('keyup', () => positionHandler?.());
+  textarea.addEventListener('click', () => positionHandler?.());
   textarea.addEventListener('keydown', event => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault();
-      runHandler?.();
+    if (event.ctrlKey || event.metaKey) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        runHandler?.();
+      } else if (event.key.toLowerCase() === 's' && saveHandler) {
+        event.preventDefault();
+        saveHandler?.();
+      }
     }
   });
 
   return {
     getValue: () => textarea.value,
     setValue: (value) => { textarea.value = value; changeHandler?.(); },
+    setLanguage: () => {},
+    getPosition: () => {
+      const lines = textarea.value.slice(0, textarea.selectionStart).split('\n');
+      return { lineNumber: lines.length, column: lines[lines.length - 1].length + 1 };
+    },
     setDiagnostics: () => {},
     setRunHandler: (handler) => { runHandler = handler; },
+    setSaveHandler: (handler) => { saveHandler = handler; },
     onChange: (handler) => { changeHandler = handler; },
+    onPosition: (handler) => { positionHandler = handler; },
     revealLine: (line) => {
       const lineStart = textarea.value.split('\n').slice(0, Math.max(0, line - 1)).join('\n').length;
       textarea.focus();
@@ -7403,7 +8697,11 @@ function createTextareaEditor(element, initialValue) {
   };
 }
 
-export async function attachCodeBuilderEditor(element, initialValue = "print('Hello from Novous2 CodeBuilder!')\n") {
+export async function attachCodeBuilderEditor(
+  element,
+  initialValue = "print('Hello from Novous2 CodeBuilder!')\n",
+  language = 'python'
+) {
   if (!element) {
     throw new Error('The CodeBuilder editor container was not found.');
   }
@@ -7412,7 +8710,7 @@ export async function attachCodeBuilderEditor(element, initialValue = "print('He
     const monaco = await loadMonaco();
     const editor = monaco.editor.create(element, {
       value: initialValue,
-      language: 'python',
+      language,
       theme: 'vs-dark',
       automaticLayout: true,
       ariaLabel: 'Python code editor',
@@ -7438,21 +8736,43 @@ export async function attachCodeBuilderEditor(element, initialValue = "print('He
       wordWrap: 'off',
     });
     let runHandler = null;
+    let saveHandler = null;
     let changeHandler = null;
+    let positionHandler = null;
     editor.onDidChangeModelContent(() => changeHandler?.());
+    editor.onDidChangeCursorPosition(() => positionHandler?.());
     editor.addAction({
       id: 'codebuilder.runPython',
       label: 'Run Python',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
       run: () => runHandler?.(),
     });
+    let saveAction = null;
 
     return {
       getValue: () => editor.getValue(),
       setValue: (value) => { editor.setValue(value); },
+      setLanguage: (nextLanguage) => {
+        const model = editor.getModel();
+        if (model) monaco.editor.setModelLanguage(model, nextLanguage);
+      },
+      getPosition: () => editor.getPosition(),
       focus: () => editor.focus(),
       setRunHandler: (handler) => { runHandler = handler; },
+      setSaveHandler: (handler) => {
+        saveAction?.dispose();
+        saveHandler = handler;
+        if (handler) {
+          saveAction = editor.addAction({
+            id: 'codebuilder.save',
+            label: 'Save',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+            run: () => saveHandler?.(),
+          });
+        }
+      },
       onChange: (handler) => { changeHandler = handler; },
+      onPosition: (handler) => { positionHandler = handler; },
       revealLine: (line) => {
         editor.revealLineInCenter(line);
         editor.setPosition({ lineNumber: line, column: 1 });
@@ -7488,7 +8808,10 @@ export async function attachCodeBuilderEditor(element, initialValue = "print('He
 
 `javascript
 import { Api } from './api.js';
+import { attachCodeBuilderEditor } from './codebuilder/codebuilder_editor.js';
 import { renderTree } from './tree.js';
+
+const fileSelectionListeners = new WeakMap();
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -7499,15 +8822,27 @@ function esc(value) {
 const state = {
   path: null,
   dirty: false,
-  ws: null
+  ws: null,
+  editor: null,
+  managedPath: false
 };
 
 /**
- * File & Agent Editor Component (textarea editor + live session event bus).
+ * File & Agent Editor Component (Monaco editor + live session event bus).
  * @param {HTMLElement} container
  * @param {string|null} initialPath
  */
 export function renderEditorView(container, initialPath = null) {
+  const initialFile = typeof initialPath === 'string'
+    ? { path: initialPath, managedFile: false }
+    : initialPath;
+  const oldSelectionListener = fileSelectionListeners.get(container);
+  if (oldSelectionListener) window.removeEventListener('novous:file-selected', oldSelectionListener);
+  state.editor?.dispose();
+  state.path = null;
+  state.dirty = false;
+  state.managedPath = false;
+
   container.innerHTML = `
     <div class="editor-layout">
       <aside class="editor-sidebar">
@@ -7524,8 +8859,7 @@ export function renderEditorView(container, initialPath = null) {
           <button class="btn btn-sm" id="editor-reload">Reload</button>
           <button class="btn btn-sm btn-primary" id="editor-save">Save (Ctrl+S)</button>
         </div>
-        <textarea id="editor-textarea" class="editor-textarea" spellcheck="false"
-                  placeholder="Select a file from the tree to edit…"></textarea>
+        <div id="editor-monaco" class="editor-monaco"></div>
         <div class="editor-status">
           <span id="editor-pos">Ln 1, Col 1</span>
           <span class="spacer"></span>
@@ -7561,7 +8895,7 @@ export function renderEditorView(container, initialPath = null) {
       </form>
     </dialog>`);
 
-  const textarea = container.querySelector('#editor-textarea');
+  const editorMount = container.querySelector('#editor-monaco');
   const pathLabel = container.querySelector('#editor-path');
   const dirtyBadge = container.querySelector('#editor-dirty');
   const bytesLabel = container.querySelector('#editor-bytes');
@@ -7576,6 +8910,25 @@ export function renderEditorView(container, initialPath = null) {
   const saveConfirm = container.querySelector('#editor-save-confirm');
   const sessionEvents = [];
   let saveDialogFiles = new Set();
+  let suppressEditorChanges = false;
+  let workspaceTree;
+  const editorReady = attachCodeBuilderEditor(editorMount, '', 'plaintext').then(instance => {
+    state.editor = instance;
+    instance.onChange(() => {
+      if (suppressEditorChanges) return;
+      if (!state.dirty) { state.dirty = true; dirtyBadge.classList.remove('hidden'); }
+      updateBytes();
+    });
+    if (state.path) {
+      suppressEditorChanges = true;
+      instance.setValue(state.content || '');
+      instance.setLanguage(languageForPath(state.path));
+      suppressEditorChanges = false;
+    }
+    instance.focus();
+    updateBytes();
+    return instance;
+  });
 
   saveLogButton.addEventListener('click', async () => {
     saveLogButton.disabled = true;
@@ -7609,32 +8962,77 @@ export function renderEditorView(container, initialPath = null) {
     }
   });
 
-  const workspaceTree = renderTree(container.querySelector('#editor-tree'), {
-    onSelect: (path) => openFile(path)
-  });
-
-  async function openFile(path) {
+  async function openFile(path, managedFile = false) {
     if (state.dirty && !confirm('Discard unsaved changes?')) return;
     try {
-      const data = await Api.readFile(path);
+      const data = managedFile ? await Api.readManagedFile(path) : await Api.readFile(path);
       state.path = data.path;
+      state.content = data.content;
+      state.managedPath = managedFile;
       state.dirty = false;
-      textarea.value = data.content;
       pathLabel.textContent = data.path;
       dirtyBadge.classList.add('hidden');
+      await editorReady;
+      suppressEditorChanges = true;
+      state.editor.setLanguage(languageForPath(data.path));
+      state.editor.setValue(data.content);
+      suppressEditorChanges = false;
       updateBytes();
       updatePos();
       sendWs({ type: 'file_opened', path: data.path });
       appendEvent({ type: 'file_opened', path: data.path, session_id: 'you' });
-      textarea.focus();
+      state.editor.focus();
     } catch (err) {
+      suppressEditorChanges = false;
       alert(err.message);
     }
   }
 
+  function languageForPath(path) {
+    const extension = path.split('.').pop().toLowerCase();
+    return ({
+      c: 'c', cc: 'cpp', cpp: 'cpp', cs: 'csharp', css: 'css', go: 'go',
+      h: 'cpp', htm: 'html', html: 'html', java: 'java', js: 'javascript',
+      json: 'json', jsx: 'javascript', md: 'markdown', mjs: 'javascript',
+      py: 'python', rb: 'ruby', rs: 'rust', sh: 'shell', sql: 'sql',
+      ts: 'typescript', tsx: 'typescript', txt: 'plaintext', xml: 'xml',
+      yaml: 'yaml', yml: 'yaml'
+    })[extension] || 'plaintext';
+  }
+
+  workspaceTree = renderTree(container.querySelector('#editor-tree'), {
+    onBeforeDelete: path => {
+      const deletesOpenFile = state.path === path || state.path?.startsWith(`${path}/`);
+      return !deletesOpenFile || !state.dirty ||
+        confirm('This item contains the open file with unsaved changes. Delete anyway?');
+    },
+    onDelete: path => {
+      if (state.path === path || state.path?.startsWith(`${path}/`)) {
+        state.path = null;
+        state.content = '';
+        state.managedPath = false;
+        state.editor?.setValue('');
+        pathLabel.textContent = 'No file open';
+        dirtyBadge.classList.add('hidden');
+        state.dirty = false;
+        updateBytes();
+      }
+    }
+  });
+  const onFileSelected = event => {
+    const path = event.detail && event.detail.path;
+    if (typeof path === 'string' && path) openFile(path, true);
+  };
+  fileSelectionListeners.set(container, onFileSelected);
+  window.addEventListener('novous:file-selected', onFileSelected);
+  editorReady.then(instance => instance.onPosition(updatePos));
+
   async function openSaveDialog() {
     try {
-      const tree = await Api.getFileTree();
+      const managedSave = state.managedPath || !state.path;
+      const tree = managedSave
+        ? await Api.getManagedFileTree()
+        : await Api.getFileTree();
       const folders = [];
       const files = new Set();
       function collect(node) {
@@ -7698,8 +9096,15 @@ export function renderEditorView(container, initialPath = null) {
 
     saveConfirm.disabled = true;
     try {
-      await Api.writeFile(targetPath, textarea.value);
+      await editorReady;
+      const content = state.editor.getValue();
+      const managedSave = state.managedPath || !state.path;
+      if (managedSave) await Api.writeManagedFile(targetPath, content);
+      else await Api.writeFile(targetPath, content);
       state.path = targetPath;
+      state.content = content;
+      state.managedPath = managedSave;
+      state.editor.setLanguage(languageForPath(targetPath));
       state.dirty = false;
       dirtyBadge.classList.add('hidden');
       pathLabel.textContent = targetPath;
@@ -7716,24 +9121,13 @@ export function renderEditorView(container, initialPath = null) {
   }
 
   function updateBytes() {
-    bytesLabel.textContent = `${new Blob([textarea.value]).size} bytes`;
+    bytesLabel.textContent = `${new Blob([state.editor?.getValue() || '']).size} bytes`;
   }
 
   function updatePos() {
-    const upto = textarea.value.slice(0, textarea.selectionStart);
-    const lines = upto.split('\n');
-    posLabel.textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
+    const position = state.editor?.getPosition();
+    if (position) posLabel.textContent = `Ln ${position.lineNumber}, Col ${position.column}`;
   }
-
-  textarea.addEventListener('input', () => {
-    if (!state.dirty) { state.dirty = true; dirtyBadge.classList.remove('hidden'); }
-    updateBytes();
-  });
-  textarea.addEventListener('keyup', updatePos);
-  textarea.addEventListener('click', updatePos);
-  textarea.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveFile(); }
-  });
 
   container.querySelector('#editor-save').addEventListener('click', openSaveDialog);
   container.querySelector('#editor-save-form').addEventListener('submit', (event) => {
@@ -7744,6 +9138,7 @@ export function renderEditorView(container, initialPath = null) {
   container.querySelector('#editor-reload').addEventListener('click', () => {
     if (state.path) openFile(state.path);
   });
+  editorReady.then(instance => instance.setSaveHandler(saveFile));
 
   // --- WebSocket session event bus ----------------------------------------
   function connectWs() {
@@ -7834,7 +9229,47 @@ export function renderEditorView(container, initialPath = null) {
 
   connectWs();
 
-  if (initialPath) openFile(initialPath);
+  if (initialFile?.path) openFile(initialFile.path, initialFile.managedFile === true);
+}
+
+`
+
+### frontend/static/js/icons.js
+
+`javascript
+const ICON_MARKUP = {
+  activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  bug: '<path d="M12 20v-8"/><path d="M8 20v-4a4 4 0 0 1 8 0v4"/><path d="M19 8h-3"/><path d="M8 8H5"/><path d="M19 12h-3"/><path d="M8 12H5"/><path d="M16 4a4 4 0 0 0-8 0"/>',
+  'check-square': '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  'file-code': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m10 13-2 2 2 2"/><path d="m14 13 2 2-2 2"/>',
+  gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="M12 14a2 2 0 1 0-2-2"/>',
+  'play-circle': '<circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/>',
+  refresh: '<path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.55-2.6L20 12"/><path d="M4 12l2.85 5.6A7 7 0 0 0 18.4 15"/>',
+  reset: '<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  terminal: '<rect x="2" y="3" width="20" height="18" rx="2"/><path d="m7 9 3 3-3 3"/><path d="M13 15h4"/>',
+  'trash-2': '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/>'
+};
+
+export function createIcon(name) {
+  const markup = ICON_MARKUP[name];
+  if (!markup) throw new Error(`Unknown icon: ${name}`);
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', '16');
+  svg.setAttribute('height', '16');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.classList.add('chat-icon');
+  svg.innerHTML = markup;
+  return svg;
 }
 
 `
@@ -9219,7 +10654,9 @@ export function renderPromptCreationView(container) {
     if (!environment || !agentId) return showMsg('Select an agent to publish first.', true);
     if (!preview.value.trim()) return showMsg('Assemble a prompt before saving it to an agent.', true);
     try {
-      const res = await Api.publishAgent(agentId, 'snapshot', preview.value, environment);
+      const res = await Api.publishAgent(
+        agentId, 'snapshot', preview.value, environment, [...promptTools.keys()]
+      );
       showMsg(`Saved to ${res.path} and ${res.metadata_path} (headers ${res.header_report.verdict}; snapshot ${res.snapshot}).`);
     } catch (err) {
       showMsg(err.message, true);
@@ -9336,7 +10773,9 @@ export function renderPromptCreationView(container) {
         saveButton.disabled = true;
         try {
           await Api.createAgent(id, name, description, mode, '', agentEnvironment, environmentName);
-          await Api.publishAgent(id, 'prompt-creation', preview.value, agentEnvironment);
+          await Api.publishAgent(
+            id, 'prompt-creation', preview.value, agentEnvironment, [...promptTools.keys()]
+          );
           showMsg(`Agent '${name}' created from the prompt (library/${id}.md)${result.passed ? '.' : ' even though tests failed.'}`);
           form.classList.add('hidden');
           await loadPromptAgents();
@@ -9651,6 +11090,8 @@ export function renderPromptCreationView(container) {
 ### frontend/static/js/test_panel.js
 
 `javascript
+import { createIcon } from './icons.js';
+
 const TEST_FUNCTIONS = [
   { id: 'runTestSuite', label: 'Run Test Suite', icon: 'play-circle', action: null },
   { id: 'debugAgent', label: 'Debug Agent', icon: 'bug', action: null },
@@ -9677,15 +11118,13 @@ export function buildTestPanel(containerId, actions = {}) {
   TEST_FUNCTIONS.forEach((test) => {
     const action = actions[test.id] || test.action;
     const button = document.createElement('button');
-    const icon = document.createElement('i');
     const label = document.createElement('span');
 
     button.className = 'test-function';
     button.type = 'button';
     button.dataset.testFunction = test.id;
-    icon.setAttribute('data-lucide', test.icon);
     label.textContent = test.label;
-    button.append(icon, label);
+    button.append(createIcon(test.icon), label);
 
     if (typeof action !== 'function') {
       button.classList.add('disabled');
@@ -9716,7 +11155,7 @@ export function buildTestPanel(containerId, actions = {}) {
   refreshTodoFiles.id = 'todo-file-refresh';
   refreshTodoFiles.className = 'btn btn-sm';
   refreshTodoFiles.type = 'button';
-  refreshTodoFiles.textContent = 'Refresh lists';
+  refreshTodoFiles.append(createIcon('refresh'), document.createTextNode('Refresh lists'));
   refreshTodoFiles.title = 'Refresh Markdown to-do lists';
 
   const loadingOption = document.createElement('option');
@@ -9726,10 +11165,6 @@ export function buildTestPanel(containerId, actions = {}) {
 
   todoSection.append(todoLabel, todoSelect, refreshTodoFiles);
   container.appendChild(todoSection);
-
-  if (typeof globalThis.lucide?.createIcons === 'function') {
-    globalThis.lucide.createIcons();
-  }
 }
 
 `
@@ -10337,98 +11772,168 @@ function esc(value) {
   }[c]));
 }
 
-/**
- * Interactive File Tree Component.
- * @param {HTMLElement} container
- * @param {{onSelect?: (path: string, type: string) => void, selectable?: string}} options
- */
 export function renderTree(container, options = {}) {
-  const { onSelect, selectable = 'file' } = options;
-
+  const { onSelect, onBeforeDelete, onDelete, manageRoots = false } = options;
   container.innerHTML = `
+    ${manageRoots ? `
+    <label class="tree-root-picker">
+      <span>Workspace folder</span>
+      <select class="form-select" data-root-picker aria-label="Workspace folder"></select>
+      <span class="tree-root-path" data-root-path></span>
+    </label>` : ''}
     <div class="tree-toolbar">
-      <button class="btn btn-sm" data-action="refresh" title="Refresh">⟳ Refresh</button>
-      <button class="btn btn-sm" data-action="new-file" title="New file">+ File</button>
-      <button class="btn btn-sm" data-action="new-dir" title="New folder">+ Dir</button>
+      <button class="btn btn-sm btn-primary" data-action="new-file" title="Create a file here">+ File</button>
+      <button class="btn btn-sm" data-action="new-dir" title="Create a folder here">+ Folder</button>
+      <button class="btn btn-sm btn-ghost" data-action="refresh" title="Refresh files">↻</button>
     </div>
-    <div class="tree-body" role="tree"></div>`;
+    <div class="tree-root-label"><span aria-hidden="true">⌂</span> <span data-root-name>Workspace</span></div>
+    <div class="tree-body" role="tree" aria-label="Workspace files"></div>`;
 
   const body = container.querySelector('.tree-body');
+  const rootName = container.querySelector('[data-root-name]');
+  const rootPicker = container.querySelector('[data-root-picker]');
+  const rootPath = container.querySelector('[data-root-path]');
+  let selectedDirectory = '';
+  const expandedPaths = new Set();
 
   async function load() {
+    body.innerHTML = '<p class="tree-message">Loading files…</p>';
     try {
-      const tree = await Api.getFileTree('');
-      body.innerHTML = '';
-      body.appendChild(buildNode(tree, 0));
-    } catch (err) {
-      body.innerHTML = `<p class="text-danger">${esc(err.message)}</p>`;
+      if (manageRoots) {
+        const config = await Api.getFileManagerRoots();
+        rootName.textContent = config.roots.find(root => root.path === config.active_path)?.name || 'Workspace';
+        rootPicker.replaceChildren(...config.roots.map(root => {
+          const option = document.createElement('option');
+          option.value = root.path;
+          option.textContent = root.name;
+          option.selected = root.path === config.active_path;
+          return option;
+        }));
+        rootPath.textContent = config.active_path;
+      }
+      const tree = await Api.getManagedFileTree();
+      if (!manageRoots) rootName.textContent = tree.name || 'Workspace';
+      body.replaceChildren(...(tree.children || []).map(child => buildNode(child, 0)));
+    } catch (error) {
+      body.innerHTML = `<p class="tree-message text-danger">${esc(error.message)}</p>`;
     }
   }
 
   function buildNode(node, depth) {
+    const wrapper = document.createElement('div');
+    const isDirectory = node.type === 'directory';
     const row = document.createElement('div');
     row.className = 'tree-row';
     row.dataset.path = node.path;
     row.dataset.type = node.type;
-    row.style.paddingLeft = `${depth * 14 + 6}px`;
+    row.style.paddingLeft = `${depth * 13 + 8}px`;
     row.setAttribute('role', 'treeitem');
-
-    const isDir = node.type === 'directory';
+    const expanded = isDirectory && expandedPaths.has(node.path);
+    row.setAttribute('aria-expanded', String(expanded));
     row.innerHTML = `
-      <span class="tree-icon">${isDir ? '▾' : '·'}</span>
-      <span class="tree-name">${esc(node.name)}</span>`;
+      <button class="tree-toggle" type="button" aria-label="${isDirectory ? 'Collapse' : 'File'}"
+        ${isDirectory ? '' : 'disabled'}>${isDirectory ? (expanded ? '⌄' : '›') : ''}</button>
+      <span class="tree-icon ${isDirectory ? 'directory' : 'file'}" aria-hidden="true"></span>
+      <span class="tree-name" title="${esc(node.name)}">${esc(node.name)}</span>
+      <button class="tree-delete" type="button" title="Delete" aria-label="Delete item">×</button>`;
+    wrapper.appendChild(row);
 
-    const wrap = document.createElement('div');
-    wrap.appendChild(row);
+    let children;
+    if (isDirectory) {
+      children = document.createElement('div');
+      children.className = expanded ? 'tree-children' : 'tree-children hidden';
+      children.setAttribute('role', 'group');
+      (node.children || []).forEach(child => children.appendChild(buildNode(child, depth + 1)));
+      wrapper.appendChild(children);
+    }
 
-    row.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (isDir) {
-        const kids = wrap.querySelector(':scope > .tree-children');
-        if (kids) {
-          const hidden = kids.classList.toggle('hidden');
-          row.querySelector('.tree-icon').textContent = hidden ? '▸' : '▾';
+    row.addEventListener('click', event => {
+      if (event.target.closest('.tree-delete')) return;
+      if (isDirectory) {
+        selectedDirectory = node.path || '';
+        body.querySelectorAll('.tree-row.selected').forEach(item => item.classList.remove('selected'));
+        row.classList.add('selected');
+        if (children) {
+          const collapsed = children.classList.toggle('hidden');
+          if (collapsed) expandedPaths.delete(node.path);
+          else expandedPaths.add(node.path);
+          row.setAttribute('aria-expanded', String(!collapsed));
+          row.querySelector('.tree-toggle').textContent = collapsed ? '›' : '⌄';
         }
       } else {
-        body.querySelectorAll('.tree-row.selected').forEach(r => r.classList.remove('selected'));
+        body.querySelectorAll('.tree-row.selected').forEach(item => item.classList.remove('selected'));
         row.classList.add('selected');
         if (onSelect) onSelect(node.path, node.type);
+        else window.dispatchEvent(new CustomEvent('novous:file-selected', {
+          detail: { path: node.path }
+        }));
       }
     });
 
-    if (isDir && node.children && node.children.length) {
-      const kidsWrap = document.createElement('div');
-      kidsWrap.className = 'tree-children';
-      node.children.forEach(child => kidsWrap.appendChild(buildNode(child, depth + 1)));
-      wrap.appendChild(kidsWrap);
-    } else if (isDir) {
-      const kidsWrap = document.createElement('div');
-      kidsWrap.className = 'tree-children hidden';
-      wrap.appendChild(kidsWrap);
+    row.querySelector('.tree-delete').addEventListener('click', async event => {
+      event.stopPropagation();
+      const kind = isDirectory ? 'folder and everything inside it' : 'file';
+      if (onBeforeDelete && !(await onBeforeDelete(node.path, node.name, isDirectory))) return;
+      if (!confirm(`Delete ${kind} "${node.name}"? This cannot be undone.`)) return;
+      try {
+        await Api.deleteManagedPath(node.path);
+        if (selectedDirectory === node.path || selectedDirectory.startsWith(`${node.path}/`)) {
+          selectedDirectory = node.path.includes('/')
+            ? node.path.slice(0, node.path.lastIndexOf('/'))
+            : '';
+        }
+        await load();
+        if (onDelete) onDelete(node.path);
+      } catch (error) {
+        alert(`Could not delete "${node.name}": ${error.message}`);
+      }
+    });
+    return wrapper;
+  }
+
+  async function create(kind) {
+    const label = kind === 'directory' ? 'folder' : 'file';
+    const name = prompt(`New ${label} name:`);
+    if (!name || !name.trim()) return;
+    const filename = name.trim();
+    if (filename === '.' || filename === '..' || /[\\/]/.test(filename)) {
+      alert('Enter a name without folder separators.');
+      return;
     }
-    return wrap;
+    const path = [selectedDirectory, filename].filter(Boolean).join('/');
+    try {
+      await Api.createManagedPath(path, kind);
+      await load();
+      if (kind === 'file') {
+        if (onSelect) onSelect(path, 'file');
+        else window.dispatchEvent(new CustomEvent('novous:file-selected', {
+          detail: { path }
+        }));
+      }
+    } catch (error) {
+      alert(`Could not create ${label}: ${error.message}`);
+    }
   }
 
   container.querySelector('[data-action="refresh"]').addEventListener('click', load);
-
-  container.querySelector('[data-action="new-file"]').addEventListener('click', async () => {
-    const path = prompt('New file path (relative to workspace):');
-    if (!path) return;
-    try {
-      await Api.createPath(path, 'file');
-      load();
-      if (onSelect) onSelect(path, 'file');
-    } catch (err) { alert(err.message); }
-  });
-
-  container.querySelector('[data-action="new-dir"]').addEventListener('click', async () => {
-    const path = prompt('New folder path (relative to workspace):');
-    if (!path) return;
-    try {
-      await Api.createPath(path, 'directory');
-      load();
-    } catch (err) { alert(err.message); }
-  });
+  if (rootPicker) {
+    rootPicker.addEventListener('change', async () => {
+      rootPicker.disabled = true;
+      try {
+        await Api.selectFileManagerRoot(rootPicker.value);
+        selectedDirectory = '';
+        expandedPaths.clear();
+        await load();
+      } catch (error) {
+        alert(`Could not change workspace folder: ${error.message}`);
+        await load();
+      } finally {
+        rootPicker.disabled = false;
+      }
+    });
+  }
+  container.querySelector('[data-action="new-file"]').addEventListener('click', () => create('file'));
+  container.querySelector('[data-action="new-dir"]').addEventListener('click', () => create('directory'));
 
   load();
   return { reload: load };
@@ -10452,6 +11957,9 @@ tools:
   - write_file
   - create_file
   - list_directory
+  - list_allowed_paths
+  - map_folder
+  - map_file
   - project_status
   - ask_user_questions
 ---
@@ -10625,7 +12133,11 @@ tools:
   - read_file
   - write_file
   - create_file
+  - delete_file
   - list_directory
+  - list_allowed_paths
+  - map_folder
+  - map_file
   - project_status
   - ask_user_questions
 ---
@@ -10634,6 +12146,7 @@ tools:
 
 You are an agent created to test tools and to answer questions
 
+To map folders or files outside the workspace (absolute paths such as C:\Users\...), use map_folder or map_file. list_directory only works inside the workspace. Call list_allowed_paths to see which locations are permitted.
 ## testeragent
 
 ## 5 Solid Rules for Agent Tool Use
@@ -10692,6 +12205,103 @@ If the root cause cannot be established, clearly state what has been determined 
 - Provider: codebuilder
 - Signature: (json_file_path: str, timeout_seconds: float = 300.0) -> str
 - Description: Pause the agent and ask the user a list of questions from a JSON file in the workspace.  The browser pops up a step-by-step dialog; once the user submits answers this tool resumes and returns the questions and answers as a JSON string.  Expected JSON file contents (a list, or an object with a "questions" list): [{"id": "q1", "question": "What is the target deployment environment?"}] Provide a workspace-root-relative path; do not prefix it with 'workspace/'.
+
+`
+
+### library/ai-agent-prompt-for-tool-testing.md
+
+`markdown
+---
+id: ai-agent-prompt-for-tool-testing
+name: File manager Tester
+description: To test three tools by answering questions using the available tools.
+mode: agent
+model: qwen2.5-coder:latest
+environment: workspace
+version: 1
+tools:
+  - fm_list_directory
+  - fm_read_file
+  - fm_write_file
+  - delete_file
+---
+
+# AI Agent Prompt for Tool Testing
+
+Test the file manager tools by performing a series of tasks and reporting on the results.
+
+## Agent Response
+
+The agent will use the weather forecasting tool to retrieve the current weather conditions for New York City and return the result to the user.
+
+## Boundaries
+
+- The agent can use only the three tools provided by the user.
+- The agent should not make assumptions or use outside knowledge not provided by the tools.
+- The agent should handle any limitations of the tools gracefully.
+
+# Example Usage
+
+## Hallucination Prevention
+
+- The agent should always provide information based on the facts and capabilities of the tools.
+- The agent should not make unsupported claims or generate information that is not supported by the tools.
+- If a tool returns incorrect or missing information, the agent should explain the situation and provide an appropriate response.
+
+## Instructions
+
+- The agent should always prioritize the accuracy and relevance of the information provided by the tools.
+- If a question cannot be answered using the tools, the agent should explain why and provide an appropriate response.
+- The agent should handle any errors or missing information in a way that helps the user understand the issue.
+
+## Purpose
+
+To test three tools by answering questions using the available tools.
+
+## Responsibilities
+
+- Receive questions from the user.
+- Determine which tool is best suited to answer the question.
+- Execute the appropriate tool with the necessary parameters.
+- Return the result from the tool to the user.
+- Handle any errors or missing information gracefully.
+
+## Role
+
+The agent will interact with the user, understand their questions, and utilize three provided tools to find accurate and helpful answers.
+
+## Skills
+
+- Proficiency in using and integrating multiple tools.
+- Strong analytical and problem-solving abilities.
+- Good communication skills to explain complex information clearly.
+- Ability to handle and respond to user queries effectively.
+
+## User Question
+
+What is the weather forecast for New York City today?
+
+## Available Tools
+
+### fm_list_directory
+- Provider: file_manager
+- Signature: (path: str = '') -> str
+List files and directories under the configured file-manager root using a relative path.
+
+### fm_read_file
+- Provider: file_manager
+- Signature: (path: str) -> str
+Read a UTF-8 file using a path relative to the configured file-manager root.
+
+### fm_write_file
+- Provider: file_manager
+- Signature: (path: str, content: str) -> str
+Write UTF-8 content under the configured file-manager root and return the result as JSON.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
 
 `
 
@@ -10912,6 +12522,121 @@ A generated prompt is ready for delivery when it:
 
 ## Closing Behavior
 Do not automatically say goodbye after generating a prompt. End naturally by delivering the requested prompt and, when useful, offering a relevant next step.
+
+`
+
+### library/tool-testing-agent.md
+
+`markdown
+---
+id: tool-testing-agent
+name: Tool Testing Agent Prompt
+description: The purpose of this agent is to accurately evaluate the performance of the given tools by answering basic questions and providing feedback based on the rules.
+mode: agent
+model: qwen2.5-coder:latest
+environment: workspace
+version: 1
+tools:
+  - calculator
+  - read_file
+  - write_file
+  - create_file
+  - delete_file
+  - list_directory
+  - list_allowed_paths
+  - map_folder
+  - map_file
+  - project_status
+---
+
+# Tool Testing Agent Prompt
+
+Evaluate the performance of given tools by answering basic questions and following predefined rules to ensure accuracy and reliability.
+
+## Hallucination Prevention
+
+1. **Fact Verification:** Ensure that all facts and claims are verified and supported by the provided data or logical reasoning. Avoid making unsupported claims.
+2. **Logical Reasoning:** Use logical reasoning to evaluate the performance of tools and make recommendations based on the available data.
+3. **Data-Driven Decisions:** Make decisions based on the data provided and avoid introducing new data or assumptions that are not supported by the given information.
+4. **Avoid Hypotheticals:** Avoid making hypothetical claims or assumptions that are not based on the provided data or logical reasoning.
+5. **Transparency:** Be transparent in your responses and avoid making claims that are not based on the available data or logical reasoning.
+
+## Instructions
+
+1. **Question Reception:** Receive basic questions from the user.
+2. **Tool Execution:** Use the provided tools to answer the questions.
+3. **Feedback Collection:** Collect feedback on the tools' performance from the user.
+4. **Evaluation:** Evaluate the performance of each tool based on the questions and feedback.
+5. **Report Generation:** Generate a report listing the tools used and their performance status (used or failed).
+
+## Purpose
+
+The purpose of this agent is to accurately evaluate the performance of the given tools by answering basic questions and providing feedback based on the rules.
+
+## Responsibilities
+
+1. **Answering Questions:** Answer basic questions provided by the user using the given tools.
+2. **Feedback Collection:** Collect feedback on the tools based on the user's questions.
+3. **Tool Evaluation:** Evaluate the performance of each tool based on the user's questions and feedback.
+4. **Report Generation:** Generate a report detailing which tools were used and which tools failed based on the evaluation.
+
+## Role
+
+The role of this agent is to test the performance of given tools by answering basic questions and providing feedback based on the rules provided. The agent should ensure that its responses are accurate, reliable, and do not make unsupported claims.
+
+## Skills
+
+- Understanding of basic questions
+- Ability to use provided tools to answer questions
+- Collection and analysis of feedback on tools
+- Generation of reports based on evaluation results
+
+## Workflow
+
+1. **Understand:** Receive basic questions from the user.
+2. **Clarify:** Ask for the list of tools if they are not provided.
+3. **Design:** Create a plan for using the tools to answer the questions and collecting feedback.
+4. **Structure:** Organize the plan using the standard Markdown format.
+5. **Review:** Check for contradictions, missing requirements, unsupported assumptions, and unnecessary complexity.
+6. **Refine:** Incorporate feedback from the user.
+7. **Deliver:** Return a complete, copy-ready Markdown prompt for answering questions, collecting feedback, evaluating tools, and generating a report.
+
+## Available Tools
+
+### read_file
+- Provider: editor
+- Signature: (path: str) -> str
+Read a file by workspace-root-relative path; do not prefix paths with 'workspace/'.
+
+### write_file
+- Provider: editor
+- Signature: (path: str, content: str) -> str
+Write and verify non-empty text at a workspace-root-relative path; bare filenames go in the root.  Do not prefix paths with 'workspace/'. Supports formats such as .txt, .md, .py, .json, .html, .css, and .js. Use create_file only when an intentionally empty file is requested.
+
+### create_file
+- Provider: editor
+- Signature: (path: str, kind: str = 'file') -> str
+Create an empty file or directory by workspace-root-relative path; bare names go in root. Use write_file for content.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
+
+### list_directory
+- Provider: editor
+- Signature: (path: str = '') -> str
+List the workspace directory tree (optionally rooted at a relative path).
+
+### extract_docstrings
+- Provider: editor
+- Signature: (path: str) -> str
+Parse Python code AST to extract module, class, and function docstrings.
+
+### search_workspace
+- Provider: editor
+- Signature: (query: str, extension: str = '.py') -> str
+Search workspace files for matching keyword or snippet.
 
 `
 
@@ -11229,6 +12954,7 @@ from editor.interface import router as editor_router
 from workspace.interface import router as workspace_router
 from test_environment.interface import router as test_router
 from codebuilder.interface import router as codebuilder_router
+from file_manager.interface import router as file_manager_router
 from tools.interface import router as tools_router
 
 app = FastAPI(title="Novous2 AGENT FACTORY", version="4.0.0")
@@ -11240,6 +12966,7 @@ app.include_router(editor_router)
 app.include_router(workspace_router)
 app.include_router(test_router)
 app.include_router(codebuilder_router)
+app.include_router(file_manager_router)
 
 # Serve Static Assets (CSS, JS)
 app.mount("/static", StaticFiles(directory=Path("frontend") / "static"), name="static")
@@ -11521,6 +13248,7 @@ class PublishRequest(BaseModel):
     label: str = ""
     markdown: str = Field(..., min_length=1)
     environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
+    tools: list[str] | None = None
 
 
 class AddCategoryRequest(BaseModel):
@@ -11805,7 +13533,16 @@ def api_evaluate_markdown(payload: dict):
 @router.post("/api/testing/publish")
 def api_publish(req: PublishRequest):
     """Save a prompt to its agent profile and archive the updated definition."""
+    from core_engine import tool_catalog
     from core_engine.agent_factory import LIBRARY_ROOT, parse_markdown_sections, parse_yaml_frontmatter
+
+    if req.tools is not None:
+        missing_tools = tool_catalog.unknown_tool_names(req.tools)
+        if missing_tools:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown tools: {', '.join(missing_tools)}",
+            )
 
     agent_path = LIBRARY_ROOT / f"{req.agent_id}.md"
     if not agent_path.exists():
@@ -11835,6 +13572,8 @@ def api_publish(req: PublishRequest):
     metadata["mode"] = metadata.get("mode") or req.environment
     metadata["model"] = metadata.get("model") or "qwen2.5-coder:latest"
     metadata["environment"] = req.environment
+    if req.tools is not None:
+        metadata["tools"] = list(dict.fromkeys(req.tools))
 
     try:
         lines = ["---"]
@@ -12153,10 +13892,11 @@ def record_run(model: str, title: str, passed: bool, components: list[dict],
 `json
 {
   "model": "qwen2.5-coder:latest",
-  "runs": 3,
-  "passes": 2,
+  "runs": 10,
+  "passes": 4,
   "probe_failures": {
-    "fact_correct": 1
+    "fact_correct": 1,
+    "description_match": 5
   },
   "entries": [
     {
@@ -12200,6 +13940,112 @@ def record_run(model: str, title: str, passed: bool, components: list[dict],
       ],
       "weaknesses": [],
       "improvements": []
+    },
+    {
+      "at": "2026-10-15T16:52:02+00:00",
+      "title": "Tool Testing Agent Prompt",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    },
+    {
+      "at": "2026-10-16T05:55:51+00:00",
+      "title": "File Manager Tools Tester Agent",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    },
+    {
+      "at": "2026-10-16T06:11:28+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:13:28+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:14:40+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:24:32+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:26:30+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
     }
   ]
 }
@@ -12512,9 +14358,133 @@ def judge_prompt(model: str, title: str, description: str, sections: list[dict],
       "id": "problem-solving-agent",
       "name": "Problem Solving Agent",
       "description": ""
+    },
+    {
+      "id": "tool-testing-agent-prompt",
+      "name": "Tool Testing Agent Prompt",
+      "description": "Evaluate the performance of given tools by answering basic questions and following predefined rules to ensure accuracy and reliability."
+    },
+    {
+      "id": "ai-agent-prompt-for-tool-testing",
+      "name": "AI Agent Prompt for Tool Testing",
+      "description": ""
     }
   ]
 }
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/agent-response.md
+
+`markdown
+---
+title: Agent Response
+---
+
+The agent will use the weather forecasting tool to retrieve the current weather conditions for New York City and return the result to the user.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/boundaries.md
+
+`markdown
+---
+title: Boundaries
+---
+
+- The agent can use only the three tools provided by the user.
+- The agent should not make assumptions or use outside knowledge not provided by the tools.
+- The agent should handle any limitations of the tools gracefully.
+
+# Example Usage
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/hallucination-prevention.md
+
+`markdown
+---
+title: Hallucination Prevention
+---
+
+- The agent should always provide information based on the facts and capabilities of the tools.
+- The agent should not make unsupported claims or generate information that is not supported by the tools.
+- If a tool returns incorrect or missing information, the agent should explain the situation and provide an appropriate response.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/instructions.md
+
+`markdown
+---
+title: Instructions
+---
+
+- The agent should always prioritize the accuracy and relevance of the information provided by the tools.
+- If a question cannot be answered using the tools, the agent should explain why and provide an appropriate response.
+- The agent should handle any errors or missing information in a way that helps the user understand the issue.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/purpose.md
+
+`markdown
+---
+title: Purpose
+---
+
+To test three tools by answering questions using the available tools.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/responsibilities.md
+
+`markdown
+---
+title: Responsibilities
+---
+
+- Receive questions from the user.
+- Determine which tool is best suited to answer the question.
+- Execute the appropriate tool with the necessary parameters.
+- Return the result from the tool to the user.
+- Handle any errors or missing information gracefully.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/role.md
+
+`markdown
+---
+title: Role
+---
+
+The agent will interact with the user, understand their questions, and utilize three provided tools to find accurate and helpful answers.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/skills.md
+
+`markdown
+---
+title: Skills
+---
+
+- Proficiency in using and integrating multiple tools.
+- Strong analytical and problem-solving abilities.
+- Good communication skills to explain complex information clearly.
+- Ability to handle and respond to user queries effectively.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/ai-agent-prompt-for-tool-testing/user-question.md
+
+`markdown
+---
+title: User Question
+---
+
+What is the weather forecast for New York City today?
 
 `
 
@@ -12590,6 +14560,103 @@ title: Skills
 ---
 
 Identify the knowledge and capabilities needed for the agent to effectively solve problems, and ensure that it must possess strong logic, critical thinking, and research skills, as well as the ability to learn from experience and adapt to new situations.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/hallucination-prevention.md
+
+`markdown
+---
+title: Hallucination Prevention
+---
+
+1. **Fact Verification:** Ensure that all facts and claims are verified and supported by the provided data or logical reasoning. Avoid making unsupported claims.
+2. **Logical Reasoning:** Use logical reasoning to evaluate the performance of tools and make recommendations based on the available data.
+3. **Data-Driven Decisions:** Make decisions based on the data provided and avoid introducing new data or assumptions that are not supported by the given information.
+4. **Avoid Hypotheticals:** Avoid making hypothetical claims or assumptions that are not based on the provided data or logical reasoning.
+5. **Transparency:** Be transparent in your responses and avoid making claims that are not based on the available data or logical reasoning.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/instructions.md
+
+`markdown
+---
+title: Instructions
+---
+
+1. **Question Reception:** Receive basic questions from the user.
+2. **Tool Execution:** Use the provided tools to answer the questions.
+3. **Feedback Collection:** Collect feedback on the tools' performance from the user.
+4. **Evaluation:** Evaluate the performance of each tool based on the questions and feedback.
+5. **Report Generation:** Generate a report listing the tools used and their performance status (used or failed).
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/purpose.md
+
+`markdown
+---
+title: Purpose
+---
+
+The purpose of this agent is to accurately evaluate the performance of the given tools by answering basic questions and providing feedback based on the rules.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/responsibilities.md
+
+`markdown
+---
+title: Responsibilities
+---
+
+1. **Answering Questions:** Answer basic questions provided by the user using the given tools.
+2. **Feedback Collection:** Collect feedback on the tools based on the user's questions.
+3. **Tool Evaluation:** Evaluate the performance of each tool based on the user's questions and feedback.
+4. **Report Generation:** Generate a report detailing which tools were used and which tools failed based on the evaluation.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/role.md
+
+`markdown
+---
+title: Role
+---
+
+The role of this agent is to test the performance of given tools by answering basic questions and providing feedback based on the rules provided. The agent should ensure that its responses are accurate, reliable, and do not make unsupported claims.
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/skills.md
+
+`markdown
+---
+title: Skills
+---
+
+- Understanding of basic questions
+- Ability to use provided tools to answer questions
+- Collection and analysis of feedback on tools
+- Generation of reports based on evaluation results
+
+`
+
+### test_environment/PromptBuilderFiles/parts/tool-testing-agent-prompt/workflow.md
+
+`markdown
+---
+title: Workflow
+---
+
+1. **Understand:** Receive basic questions from the user.
+2. **Clarify:** Ask for the list of tools if they are not provided.
+3. **Design:** Create a plan for using the tools to answer the questions and collecting feedback.
+4. **Structure:** Organize the plan using the standard Markdown format.
+5. **Review:** Check for contradictions, missing requirements, unsupported assumptions, and unnecessary complexity.
+6. **Refine:** Incorporate feedback from the user.
+7. **Deliver:** Return a complete, copy-ready Markdown prompt for answering questions, collecting feedback, evaluating tools, and generating a report.
 
 `
 
@@ -13247,6 +15314,103 @@ If the root cause cannot be established, clearly state what has been determined 
 
 `
 
+### test_environment/test_agents/ai-agent-prompt-for-tool-testing__prompt-creation__20261016-062701/ai-agent-prompt-for-tool-testing.md
+
+`markdown
+---
+id: ai-agent-prompt-for-tool-testing
+name: File manager Tester
+description: To test three tools by answering questions using the available tools.
+mode: agent
+model: qwen2.5-coder:latest
+environment: workspace
+version: 1
+tools:
+  - fm_list_directory
+  - fm_read_file
+  - fm_write_file
+  - delete_file
+---
+
+# AI Agent Prompt for Tool Testing
+
+Test the file manager tools by performing a series of tasks and reporting on the results.
+
+## Agent Response
+
+The agent will use the weather forecasting tool to retrieve the current weather conditions for New York City and return the result to the user.
+
+## Boundaries
+
+- The agent can use only the three tools provided by the user.
+- The agent should not make assumptions or use outside knowledge not provided by the tools.
+- The agent should handle any limitations of the tools gracefully.
+
+# Example Usage
+
+## Hallucination Prevention
+
+- The agent should always provide information based on the facts and capabilities of the tools.
+- The agent should not make unsupported claims or generate information that is not supported by the tools.
+- If a tool returns incorrect or missing information, the agent should explain the situation and provide an appropriate response.
+
+## Instructions
+
+- The agent should always prioritize the accuracy and relevance of the information provided by the tools.
+- If a question cannot be answered using the tools, the agent should explain why and provide an appropriate response.
+- The agent should handle any errors or missing information in a way that helps the user understand the issue.
+
+## Purpose
+
+To test three tools by answering questions using the available tools.
+
+## Responsibilities
+
+- Receive questions from the user.
+- Determine which tool is best suited to answer the question.
+- Execute the appropriate tool with the necessary parameters.
+- Return the result from the tool to the user.
+- Handle any errors or missing information gracefully.
+
+## Role
+
+The agent will interact with the user, understand their questions, and utilize three provided tools to find accurate and helpful answers.
+
+## Skills
+
+- Proficiency in using and integrating multiple tools.
+- Strong analytical and problem-solving abilities.
+- Good communication skills to explain complex information clearly.
+- Ability to handle and respond to user queries effectively.
+
+## User Question
+
+What is the weather forecast for New York City today?
+
+## Available Tools
+
+### fm_list_directory
+- Provider: file_manager
+- Signature: (path: str = '') -> str
+List files and directories under the configured file-manager root using a relative path.
+
+### fm_read_file
+- Provider: file_manager
+- Signature: (path: str) -> str
+Read a UTF-8 file using a path relative to the configured file-manager root.
+
+### fm_write_file
+- Provider: file_manager
+- Signature: (path: str, content: str) -> str
+Write UTF-8 content under the configured file-manager root and return the result as JSON.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
+
+`
+
 ### test_environment/test_agents/create-a-coding-agent-prompt-basic__prompt-creation__20261015-042016/create-a-coding-agent-prompt-basic.md
 
 `markdown
@@ -13417,6 +15581,41 @@ You are a coding agent designed to understand and respond to user requests relat
     "label": "prompt-creation",
     "snapshot": "problem-solving-agent__prompt-creation__20261015-060636",
     "published_at": "2026-10-15T06:06:36.869197+00:00"
+  },
+  {
+    "agent_id": "tool-testing-agent",
+    "environment": "workspace",
+    "label": "prompt-creation",
+    "snapshot": "tool-testing-agent__prompt-creation__20261015-165245",
+    "published_at": "2026-10-15T16:52:46.005708+00:00"
+  },
+  {
+    "agent_id": "file-manager-tools-tester-agent",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__file-manager-tools-tester-agent__prompt-creation__20261016-055631",
+    "published_at": "2026-10-16T05:56:31.104236+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061208",
+    "published_at": "2026-10-16T06:12:08.792034+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061454",
+    "published_at": "2026-10-16T06:14:54.405855+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "workspace",
+    "label": "prompt-creation",
+    "snapshot": "ai-agent-prompt-for-tool-testing__prompt-creation__20261016-062701",
+    "published_at": "2026-10-16T06:27:01.669448+00:00"
   }
 ]
 
@@ -13517,6 +15716,202 @@ Would you like to test this prompt against a specific benchmark or integrate it 
 
 `
 
+### test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061208/ai-agent-prompt-for-tool-testing.md
+
+`markdown
+---
+id: ai-agent-prompt-for-tool-testing
+name: AI Agent Prompt for Tool Testing
+description: To test three tools by answering questions using the available tools.
+mode: agent
+model: qwen2.5-coder:latest
+environment: prompt-creation
+version: 1
+tools:
+  - calculator
+  - read_file
+  - write_file
+  - create_file
+  - list_directory
+  - project_status
+---
+
+# AI Agent Prompt for Tool Testing
+
+Test the file manager tools by performing a series of tasks and reporting on the results.
+
+## Agent Response
+
+The agent will use the weather forecasting tool to retrieve the current weather conditions for New York City and return the result to the user.
+
+## Boundaries
+
+- The agent can use only the three tools provided by the user.
+- The agent should not make assumptions or use outside knowledge not provided by the tools.
+- The agent should handle any limitations of the tools gracefully.
+
+# Example Usage
+
+## Hallucination Prevention
+
+- The agent should always provide information based on the facts and capabilities of the tools.
+- The agent should not make unsupported claims or generate information that is not supported by the tools.
+- If a tool returns incorrect or missing information, the agent should explain the situation and provide an appropriate response.
+
+## Instructions
+
+- The agent should always prioritize the accuracy and relevance of the information provided by the tools.
+- If a question cannot be answered using the tools, the agent should explain why and provide an appropriate response.
+- The agent should handle any errors or missing information in a way that helps the user understand the issue.
+
+## Purpose
+
+To test three tools by answering questions using the available tools.
+
+## Responsibilities
+
+- Receive questions from the user.
+- Determine which tool is best suited to answer the question.
+- Execute the appropriate tool with the necessary parameters.
+- Return the result from the tool to the user.
+- Handle any errors or missing information gracefully.
+
+## Role
+
+The agent will interact with the user, understand their questions, and utilize three provided tools to find accurate and helpful answers.
+
+## Skills
+
+- Proficiency in using and integrating multiple tools.
+- Strong analytical and problem-solving abilities.
+- Good communication skills to explain complex information clearly.
+- Ability to handle and respond to user queries effectively.
+
+## User Question
+
+What is the weather forecast for New York City today?
+
+## Available Tools
+
+### fm_list_directory
+- Provider: file_manager
+- Signature: (path: str = '') -> str
+List files and directories under the configured file-manager root using a relative path.
+
+### fm_read_file
+- Provider: file_manager
+- Signature: (path: str) -> str
+Read a UTF-8 file using a path relative to the configured file-manager root.
+
+### fm_write_file
+- Provider: file_manager
+- Signature: (path: str, content: str) -> str
+Write UTF-8 content under the configured file-manager root and return the result as JSON.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
+
+`
+
+### test_environment/test_agents/prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061454/ai-agent-prompt-for-tool-testing.md
+
+`markdown
+---
+id: ai-agent-prompt-for-tool-testing
+name: AI Agent Prompt for Tool Testing
+description: To test three tools by answering questions using the available tools.
+mode: agent
+model: qwen2.5-coder:latest
+environment: prompt-creation
+version: 1
+tools:
+  - fm_list_directory
+  - fm_read_file
+  - fm_write_file
+  - delete_file
+---
+
+# AI Agent Prompt for Tool Testing
+
+Test the file manager tools by performing a series of tasks and reporting on the results.
+
+## Agent Response
+
+The agent will use the weather forecasting tool to retrieve the current weather conditions for New York City and return the result to the user.
+
+## Boundaries
+
+- The agent can use only the three tools provided by the user.
+- The agent should not make assumptions or use outside knowledge not provided by the tools.
+- The agent should handle any limitations of the tools gracefully.
+
+# Example Usage
+
+## Hallucination Prevention
+
+- The agent should always provide information based on the facts and capabilities of the tools.
+- The agent should not make unsupported claims or generate information that is not supported by the tools.
+- If a tool returns incorrect or missing information, the agent should explain the situation and provide an appropriate response.
+
+## Instructions
+
+- The agent should always prioritize the accuracy and relevance of the information provided by the tools.
+- If a question cannot be answered using the tools, the agent should explain why and provide an appropriate response.
+- The agent should handle any errors or missing information in a way that helps the user understand the issue.
+
+## Purpose
+
+To test three tools by answering questions using the available tools.
+
+## Responsibilities
+
+- Receive questions from the user.
+- Determine which tool is best suited to answer the question.
+- Execute the appropriate tool with the necessary parameters.
+- Return the result from the tool to the user.
+- Handle any errors or missing information gracefully.
+
+## Role
+
+The agent will interact with the user, understand their questions, and utilize three provided tools to find accurate and helpful answers.
+
+## Skills
+
+- Proficiency in using and integrating multiple tools.
+- Strong analytical and problem-solving abilities.
+- Good communication skills to explain complex information clearly.
+- Ability to handle and respond to user queries effectively.
+
+## User Question
+
+What is the weather forecast for New York City today?
+
+## Available Tools
+
+### fm_list_directory
+- Provider: file_manager
+- Signature: (path: str = '') -> str
+List files and directories under the configured file-manager root using a relative path.
+
+### fm_read_file
+- Provider: file_manager
+- Signature: (path: str) -> str
+Read a UTF-8 file using a path relative to the configured file-manager root.
+
+### fm_write_file
+- Provider: file_manager
+- Signature: (path: str, content: str) -> str
+Write UTF-8 content under the configured file-manager root and return the result as JSON.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
+
+`
+
 ### test_environment/test_agents/prompt-creation__create-a-coding-agent-prompt-basic__prompt-creation__20261015-042349/create-a-coding-agent-prompt-basic.md
 
 `markdown
@@ -13549,6 +15944,99 @@ You must design a basic prompt for a coding agent that involves understanding a 
 ## Role
 
 You are a coding agent designed to understand and respond to user requests related to coding tasks. Your goal is to provide accurate, relevant, and helpful responses.
+
+`
+
+### test_environment/test_agents/prompt-creation__file-manager-tools-tester-agent__prompt-creation__20261016-055631/file-manager-tools-tester-agent.md
+
+`markdown
+---
+id: file-manager-tools-tester-agent
+name: File Manager Tools Tester Agent
+description: To ensure that all file manager tools are working as expected and to identify any potential issues.
+mode: agent
+model: qwen2.5-coder:latest
+environment: prompt-creation
+version: 1
+tools:
+  - calculator
+  - read_file
+  - write_file
+  - create_file
+  - list_directory
+  - project_status
+---
+
+# File Manager Tools Tester Agent
+
+Test the file manager tools by performing a series of tasks and reporting on the results.
+
+## Hallucination Prevention
+
+- Ensure all tasks are performed within the context of the provided file manager tools.
+- Verify the existence of the designated directories and files before performing operations.
+- Document any unexpected behavior or errors encountered during task execution.
+
+## Instructions
+
+1. **Upload a Sample File:** Use the file manager tool to upload a sample file to a designated directory.
+2. **Copy the Sample File:** Copy the uploaded sample file to another directory and verify that it has been successfully copied.
+3. **Rename the File:** Rename the copied file and verify that the change has been applied correctly.
+4. **Delete the File:** Delete the renamed file and verify that it has been successfully removed from the system.
+5. **Search for the File:** Search for the deleted file and verify that it is no longer found in the system.
+6. **Report the Results:** Compile a report detailing the outcomes of the tasks, including any errors encountered.
+
+## Purpose
+
+To ensure that all file manager tools are working as expected and to identify any potential issues.
+
+## Responsibilities
+
+- Execute predefined tasks using the file manager tools.
+- Document the results of each task, including any errors or unexpected behavior.
+- Summarize the findings and suggest any necessary adjustments to the tools.
+
+## Role
+
+The File Manager Tools Tester Agent will verify the functionality of various file management tools by executing predefined tasks and documenting the outcomes.
+
+## Skills
+
+- Basic file management tasks (upload, copy, rename, delete)
+- Task execution and documentation
+- Error identification and reporting
+
+## Workflow
+
+1. **Understand:** Identify the agent's purpose and intended behavior.
+2. **Clarify:** Ask a targeted question only when an important requirement is unclear.
+3. **Design:** Create a prompt tailored to the requested agent.
+4. **Structure:** Organize the prompt using the standard Markdown format.
+5. **Review:** Check for contradictions, missing requirements, unsupported assumptions, and unnecessary complexity.
+6. **Refine:** Incorporate the user's feedback.
+7. **Deliver:** Return a complete, copy-ready Markdown prompt.
+
+## Available Tools
+
+### fm_list_directory
+- Provider: file_manager
+- Signature: (path: str = '') -> str
+List files and directories under the configured file-manager root using a relative path.
+
+### fm_read_file
+- Provider: file_manager
+- Signature: (path: str) -> str
+Read a UTF-8 file using a path relative to the configured file-manager root.
+
+### fm_write_file
+- Provider: file_manager
+- Signature: (path: str, content: str) -> str
+Write UTF-8 content under the configured file-manager root and return the result as JSON.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
 
 `
 
@@ -13667,6 +16155,117 @@ A generated prompt is ready for delivery when it:
 
 ## Closing Behavior
 Do not automatically say goodbye after generating a prompt. End naturally by delivering the requested prompt and, when useful, offering a relevant next step.
+
+`
+
+### test_environment/test_agents/tool-testing-agent__prompt-creation__20261015-165245/tool-testing-agent.md
+
+`markdown
+---
+id: tool-testing-agent
+name: Tool Testing Agent Prompt
+description: The purpose of this agent is to accurately evaluate the performance of the given tools by answering basic questions and providing feedback based on the rules.
+mode: agent
+model: qwen2.5-coder:latest
+environment: workspace
+version: 1
+tools:
+  - calculator
+  - read_file
+  - write_file
+  - create_file
+  - list_directory
+  - project_status
+---
+
+# Tool Testing Agent Prompt
+
+Evaluate the performance of given tools by answering basic questions and following predefined rules to ensure accuracy and reliability.
+
+## Hallucination Prevention
+
+1. **Fact Verification:** Ensure that all facts and claims are verified and supported by the provided data or logical reasoning. Avoid making unsupported claims.
+2. **Logical Reasoning:** Use logical reasoning to evaluate the performance of tools and make recommendations based on the available data.
+3. **Data-Driven Decisions:** Make decisions based on the data provided and avoid introducing new data or assumptions that are not supported by the given information.
+4. **Avoid Hypotheticals:** Avoid making hypothetical claims or assumptions that are not based on the provided data or logical reasoning.
+5. **Transparency:** Be transparent in your responses and avoid making claims that are not based on the available data or logical reasoning.
+
+## Instructions
+
+1. **Question Reception:** Receive basic questions from the user.
+2. **Tool Execution:** Use the provided tools to answer the questions.
+3. **Feedback Collection:** Collect feedback on the tools' performance from the user.
+4. **Evaluation:** Evaluate the performance of each tool based on the questions and feedback.
+5. **Report Generation:** Generate a report listing the tools used and their performance status (used or failed).
+
+## Purpose
+
+The purpose of this agent is to accurately evaluate the performance of the given tools by answering basic questions and providing feedback based on the rules.
+
+## Responsibilities
+
+1. **Answering Questions:** Answer basic questions provided by the user using the given tools.
+2. **Feedback Collection:** Collect feedback on the tools based on the user's questions.
+3. **Tool Evaluation:** Evaluate the performance of each tool based on the user's questions and feedback.
+4. **Report Generation:** Generate a report detailing which tools were used and which tools failed based on the evaluation.
+
+## Role
+
+The role of this agent is to test the performance of given tools by answering basic questions and providing feedback based on the rules provided. The agent should ensure that its responses are accurate, reliable, and do not make unsupported claims.
+
+## Skills
+
+- Understanding of basic questions
+- Ability to use provided tools to answer questions
+- Collection and analysis of feedback on tools
+- Generation of reports based on evaluation results
+
+## Workflow
+
+1. **Understand:** Receive basic questions from the user.
+2. **Clarify:** Ask for the list of tools if they are not provided.
+3. **Design:** Create a plan for using the tools to answer the questions and collecting feedback.
+4. **Structure:** Organize the plan using the standard Markdown format.
+5. **Review:** Check for contradictions, missing requirements, unsupported assumptions, and unnecessary complexity.
+6. **Refine:** Incorporate feedback from the user.
+7. **Deliver:** Return a complete, copy-ready Markdown prompt for answering questions, collecting feedback, evaluating tools, and generating a report.
+
+## Available Tools
+
+### read_file
+- Provider: editor
+- Signature: (path: str) -> str
+Read a file by workspace-root-relative path; do not prefix paths with 'workspace/'.
+
+### write_file
+- Provider: editor
+- Signature: (path: str, content: str) -> str
+Write and verify non-empty text at a workspace-root-relative path; bare filenames go in the root.  Do not prefix paths with 'workspace/'. Supports formats such as .txt, .md, .py, .json, .html, .css, and .js. Use create_file only when an intentionally empty file is requested.
+
+### create_file
+- Provider: editor
+- Signature: (path: str, kind: str = 'file') -> str
+Create an empty file or directory by workspace-root-relative path; bare names go in root. Use write_file for content.
+
+### delete_file
+- Provider: editor
+- Signature: (path: str) -> str
+Delete a file or empty directory from the workspace.
+
+### list_directory
+- Provider: editor
+- Signature: (path: str = '') -> str
+List the workspace directory tree (optionally rooted at a relative path).
+
+### extract_docstrings
+- Provider: editor
+- Signature: (path: str) -> str
+Parse Python code AST to extract module, class, and function docstrings.
+
+### search_workspace
+- Provider: editor
+- Signature: (query: str, extension: str = '.py') -> str
+Search workspace files for matching keyword or snippet.
 
 `
 
@@ -13867,6 +16466,101 @@ class ReportStoreTests(unittest.TestCase):
             self.assertEqual(report_store.get_report(record["id"])["notes"], "n")
             with self.assertRaises(ValueError):
                 report_store.get_report("../x")
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+`
+
+### test_environment/test_publish_tools.py
+
+`python
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from core_engine import agent_factory
+from test_environment import interface
+
+
+class TestPublishTools(unittest.TestCase):
+    def test_publish_writes_selected_registered_tools_to_frontmatter(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            library = root / "library"
+            test_agents = root / "test_agents"
+            library.mkdir()
+            (library / "tool-agent.md").write_text(
+                "---\nid: tool-agent\nname: Tool Agent\nmode: agent\ntools:\n"
+                "  - calculator\n---\n\nOld prompt\n",
+                encoding="utf-8",
+            )
+            manifest = test_agents / "manifest.json"
+            test_agents.mkdir()
+            manifest.write_text("[]\n", encoding="utf-8")
+            app = FastAPI()
+            app.include_router(interface.router)
+            client = TestClient(app)
+
+            with (
+                patch.object(agent_factory, "LIBRARY_ROOT", library),
+                patch.object(interface, "TEST_AGENTS_DIR", test_agents),
+                patch.object(interface.test_runner, "run_header_tests", return_value={"verdict": "ok"}),
+            ):
+                response = client.post(
+                    "/api/testing/publish",
+                    json={
+                        "agent_id": "tool-agent",
+                        "label": "prompt-creation",
+                        "markdown": "# Tool Agent\n\nUpdated prompt.",
+                        "environment": "prompt-creation",
+                        "tools": ["fm_list_directory", "fm_read_file", "fm_write_file"],
+                    },
+                )
+
+            self.assertEqual(response.status_code, 200, response.text)
+            saved = (library / "tool-agent.md").read_text(encoding="utf-8")
+            metadata = agent_factory.parse_yaml_frontmatter(saved)
+            self.assertEqual(
+                metadata["tools"],
+                ["fm_list_directory", "fm_read_file", "fm_write_file"],
+            )
+            snapshot_file = test_agents / response.json()["snapshot"] / "tool-agent.md"
+            self.assertEqual(
+                agent_factory.parse_yaml_frontmatter(snapshot_file.read_text(encoding="utf-8"))["tools"],
+                metadata["tools"],
+            )
+            self.assertEqual(json.loads(manifest.read_text(encoding="utf-8"))[0]["agent_id"], "tool-agent")
+
+    def test_publish_rejects_unregistered_tool_names(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            library = Path(temporary_directory)
+            (library / "tool-agent.md").write_text(
+                "---\nid: tool-agent\nmode: agent\n---\n\nPrompt\n",
+                encoding="utf-8",
+            )
+            app = FastAPI()
+            app.include_router(interface.router)
+            client = TestClient(app)
+
+            with patch.object(agent_factory, "LIBRARY_ROOT", library):
+                response = client.post(
+                    "/api/testing/publish",
+                    json={
+                        "agent_id": "tool-agent",
+                        "markdown": "Updated prompt.",
+                        "tools": ["not_a_registered_tool"],
+                    },
+                )
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn("Unknown tools", response.json()["detail"])
 
 
 if __name__ == "__main__":
@@ -17574,6 +20268,30 @@ def delete_custom_tool(name: str) -> dict:
 
 `
 
+### tools/allowed_paths.json
+
+`json
+{
+  "map_roots": [
+    "E:\\Novous2\\workspace",
+    "C:\\Users\\43319\\OneDrive\\D\\Documents"
+  ],
+  "file_manager_root": "E:\\Novous2\\workspace",
+  "file_manager_roots": [
+    {
+      "name": "Workspace",
+      "path": "E:\\Novous2\\workspace"
+    },
+    {
+      "name": "Documents",
+      "path": "C:\\Users\\43319\\OneDrive\\D\\Documents"
+    }
+  ],
+  "active_file_manager_root": "E:\\Novous2\\workspace"
+}
+
+`
+
 ### tools/codebuilder_tools.py
 
 `python
@@ -17820,7 +20538,7 @@ def delete_file(path: str) -> str:
 
 @tool(provider="editor")
 def list_directory(path: str = "") -> str:
-    """List the workspace directory tree (optionally rooted at a relative path)."""
+    """List the workspace directory tree (optionally rooted at a relative path). Workspace only; for absolute paths such as C:\\... use map_folder."""
     return langgraph_tools.map_directory_tree_tool.invoke({"relative_path": path})
 
 
@@ -17839,6 +20557,36 @@ def search_workspace(query: str, extension: str = ".py") -> str:
 
 `
 
+### tools/file_manager_tools.py
+
+`python
+"""Agent tools backed by the shared workspace file manager."""
+
+import json
+
+from core_engine.tool_catalog import tool
+from file_manager.service import file_manager_service
+
+
+@tool(provider="file_manager")
+def fm_list_directory(path: str = "") -> str:
+    """List files and directories under the configured file-manager root using a relative path."""
+    return json.dumps(file_manager_service.list_directory(path), indent=2)
+
+
+@tool(provider="file_manager")
+def fm_read_file(path: str) -> str:
+    """Read a UTF-8 file using a path relative to the configured file-manager root."""
+    return file_manager_service.read_file(path)["content"]
+
+
+@tool(provider="file_manager")
+def fm_write_file(path: str, content: str) -> str:
+    """Write UTF-8 content under the configured file-manager root and return the result as JSON."""
+    return json.dumps(file_manager_service.write_file(path, content), indent=2)
+
+`
+
 ### tools/interface.py
 
 `python
@@ -17848,6 +20596,7 @@ import ast
 import inspect
 from pathlib import Path
 import re
+import sys
 from typing import Callable
 
 from fastapi import APIRouter, HTTPException
@@ -18129,6 +20878,25 @@ def api_register_tool(req: RegisterToolRequest):
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+class MapPageRequest(BaseModel):
+    path: str
+    max_depth: int = 3
+    include_files: bool = True
+    offset: int = 0
+
+
+@router.post("/api/tools/map-page")
+def api_map_page(req: MapPageRequest):
+    tool_catalog.load_tools()
+    module = sys.modules.get("tools.map_tools")
+    if module is None:
+        raise HTTPException(status_code=503, detail="Map tools are not loaded.")
+    try:
+        return module.render_map_page(req.path, req.max_depth, req.include_files, req.offset)
+    except (PermissionError, ValueError, NotADirectoryError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
 @router.get("/api/tools/{name}")
 def api_get_tool(name: str):
     tool_catalog.load_tools()
@@ -18157,6 +20925,214 @@ def api_delete_tool(name: str):
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+`
+
+### tools/map_tools.py
+
+`python
+"""Read-only folder/file mapping tools restricted to an allow-list of root paths.
+
+Allowed roots live in allowed_paths.json (next to this file) under "map_roots" and are
+re-read on every call, so edits take effect without restarting the server.
+"""
+import ast
+import json
+import os
+from datetime import datetime
+from pathlib import Path
+
+from core_engine.tool_catalog import tool
+
+CONFIG_PATH = Path(__file__).resolve().parent / "allowed_paths.json"
+MAX_DEPTH = 6
+MAX_ENTRIES = 5000
+PAGE_SIZE = 80
+SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
+
+
+def _allowed_roots() -> list[Path]:
+    if not CONFIG_PATH.is_file():
+        return []
+    data = json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
+    roots = []
+    for raw in data.get("map_roots", []):
+        try:
+            roots.append(Path(os.path.expandvars(str(raw))).expanduser().resolve())
+        except OSError:
+            continue
+    return roots
+
+
+def _within(path: Path, root: Path) -> bool:
+    return os.path.normcase(str(path)) == os.path.normcase(str(root)) or any(
+        os.path.normcase(str(parent)) == os.path.normcase(str(root))
+        for parent in path.parents
+    )
+
+
+def _resolve_allowed(raw_path: str) -> Path:
+    """Resolve a path (following symlinks) and require it to be inside an allowed root."""
+    if not raw_path or not raw_path.strip():
+        raise ValueError("A path is required.")
+    roots = _allowed_roots()
+    if not roots:
+        raise PermissionError(f"No allowed paths configured in {CONFIG_PATH}.")
+    candidate = Path(os.path.expandvars(raw_path.strip())).expanduser().resolve()
+    if not any(_within(candidate, root) for root in roots):
+        allowed = ", ".join(str(r) for r in roots)
+        raise PermissionError(f"Path '{candidate}' is outside the allowed paths: {allowed}")
+    return candidate
+
+
+def _format_size(size: int) -> str:
+    value = float(size)
+    for unit in ("B", "KB", "MB", "GB"):
+        if value < 1024 or unit == "GB":
+            return f"{int(value)} B" if unit == "B" else f"{value:.1f} {unit}"
+        value /= 1024
+    return f"{size} B"
+
+
+def _visible_entries(directory: Path, roots: list[Path], include_files: bool) -> list[tuple[Path, bool]]:
+    try:
+        entries = sorted(directory.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower()))
+    except OSError:
+        return []
+    visible = []
+    for entry in entries:
+        try:
+            resolved = entry.resolve()
+            if not any(_within(resolved, root) for root in roots):
+                continue  # links pointing outside the allowed roots are not followed
+            if entry.is_dir():
+                if entry.name not in SKIP_DIRS:
+                    visible.append((resolved, True))
+            elif include_files and entry.is_file():
+                visible.append((resolved, False))
+        except OSError:
+            continue
+    return visible
+
+
+def _build_lines(directory: Path, roots: list[Path], depth: int, include_files: bool,
+                 prefix: str, lines: list[str], counter: list[int]) -> None:
+    entries = _visible_entries(directory, roots, include_files)
+    for index, (entry, is_dir) in enumerate(entries):
+        last = index == len(entries) - 1
+        if counter[0] >= MAX_ENTRIES:
+            lines.append(f"{prefix}└── … scan limit of {MAX_ENTRIES} entries reached")
+            return
+        counter[0] += 1
+        connector = "└── " if last else "├── "
+        if is_dir:
+            lines.append(f"{prefix}{connector}📁 {entry.name}/")
+            if depth > 1:
+                _build_lines(entry, roots, depth - 1, include_files,
+                             prefix + ("    " if last else "│   "), lines, counter)
+        else:
+            try:
+                size = f"  ({_format_size(entry.stat().st_size)})"
+            except OSError:
+                size = ""
+            lines.append(f"{prefix}{connector}📄 {entry.name}{size}")
+
+
+def render_map_page(path: str, max_depth: int = 3, include_files: bool = True,
+                    offset: int = 0, page_size: int = PAGE_SIZE) -> dict:
+    """Return one page of the folder tree as text plus paging info. Raises on disallowed paths."""
+    target = _resolve_allowed(path)
+    if not target.is_dir():
+        raise NotADirectoryError(f"'{target}' is not a directory.")
+    depth = max(1, min(int(max_depth), MAX_DEPTH))
+    start = max(0, int(offset))
+    size = max(10, min(int(page_size), 500))
+
+    lines = [f"📁 {target}"]
+    _build_lines(target, _allowed_roots(), depth, bool(include_files), "", lines, [0])
+    page = lines[start:start + size]
+    next_offset = start + len(page)
+    remaining = max(0, len(lines) - next_offset)
+    text = "\n".join(page)
+    if not page:
+        text = "(no more entries)"
+    elif len(lines) == 1:
+        text += "\n└── (empty)"
+    return {"text": text, "next_offset": next_offset, "remaining": remaining, "total": len(lines)}
+
+
+@tool(provider="tools")
+def list_allowed_paths() -> str:
+    """List the root paths that the map tools are permitted to read."""
+    return json.dumps([str(root) for root in _allowed_roots()], indent=2)
+
+
+def _to_int(value, default: int) -> int:
+    try:
+        return int(str(value).strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_bool(value, default: bool = True) -> bool:
+    if isinstance(value, bool):
+        return value
+    text = str(value).strip().lower()
+    if text in ("true", "1", "yes", "y"):
+        return True
+    if text in ("false", "0", "no", "n"):
+        return False
+    return default
+
+
+@tool(provider="tools")
+def map_folder(path: str, max_depth: int = 3, include_files: bool = True, offset: int = 0) -> str:
+    """Draw a folder (absolute path like C:\\Users\\...) as a tree of folders and files; use this instead of list_directory for absolute paths.
+
+    The path must be inside an allowed path (see list_allowed_paths).
+    The chat shows the tree to the user automatically, so do not retype it. Output is paged (80 lines).
+    If it ends with a "more lines" note, ask the user whether they want more; if yes, call map_folder
+    again with the same arguments and offset set to the "next offset" value. Depth is capped at 6.
+    Only path is required; omit the other arguments for defaults.
+    """
+    try:
+        page = render_map_page(
+            path, _to_int(max_depth, 3), _to_bool(include_files), _to_int(offset, 0)
+        )
+    except Exception as exc:
+        raise RuntimeError(f"Could not map folder '{path}': {exc}") from exc
+    text = page["text"]
+    if page["remaining"]:
+        text += f"\n… {page['remaining']} more lines (next offset {page['next_offset']})"
+    return text
+
+
+map_folder.display_output = True
+
+
+@tool(provider="tools")
+def map_file(path: str) -> str:
+    """Describe a file (size, modified time, Python classes/functions) at an absolute path inside an allowed path."""
+    try:
+        target = _resolve_allowed(path)
+        if not target.is_file():
+            return f"Error: '{target}' is not a file."
+        stat = target.stat()
+        info = {
+            "path": str(target),
+            "size": stat.st_size,
+            "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+            "extension": target.suffix.lower(),
+        }
+        if target.suffix.lower() == ".py":
+            tree = ast.parse(target.read_text(encoding="utf-8", errors="ignore"))
+            info["classes"] = [n.name for n in tree.body if isinstance(n, ast.ClassDef)]
+            info["functions"] = [
+                n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+            ]
+        return json.dumps(info, indent=2)
+    except Exception as exc:
+        return f"Error mapping file '{path}': {exc}"
 
 `
 
@@ -18193,6 +21169,21 @@ def project_status() -> str:
 
 `python
 
+`
+
+### workspace/documentation/about.txt
+
+`text
+my name is Jesus 
+I work at costco
+my family is Mom Dad Sister and Brother in law
+one of my goasl in life is to be developer and i am working on Novous app
+`
+
+### workspace/example.txt
+
+`text
+Hello, World!
 `
 
 ### workspace/interface.py
@@ -18372,6 +21363,12 @@ def api_delete_squad(req: SquadRequest):
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
 
+`
+
+### workspace/jesus_blue.txt
+
+`text
+Remember, my name is jesus and I like blue
 `
 
 ### workspace/Notes/Notes.txt
