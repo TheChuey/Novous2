@@ -86,6 +86,7 @@ class PublishRequest(BaseModel):
     label: str = ""
     markdown: str = Field(..., min_length=1)
     environment: Literal["workspace", "codebuilder", "prompt-creation"] = "workspace"
+    tools: list[str] | None = None
 
 
 class AddCategoryRequest(BaseModel):
@@ -370,7 +371,16 @@ def api_evaluate_markdown(payload: dict):
 @router.post("/api/testing/publish")
 def api_publish(req: PublishRequest):
     """Save a prompt to its agent profile and archive the updated definition."""
+    from core_engine import tool_catalog
     from core_engine.agent_factory import LIBRARY_ROOT, parse_markdown_sections, parse_yaml_frontmatter
+
+    if req.tools is not None:
+        missing_tools = tool_catalog.unknown_tool_names(req.tools)
+        if missing_tools:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown tools: {', '.join(missing_tools)}",
+            )
 
     agent_path = LIBRARY_ROOT / f"{req.agent_id}.md"
     if not agent_path.exists():
@@ -400,6 +410,8 @@ def api_publish(req: PublishRequest):
     metadata["mode"] = metadata.get("mode") or req.environment
     metadata["model"] = metadata.get("model") or "qwen2.5-coder:latest"
     metadata["environment"] = req.environment
+    if req.tools is not None:
+        metadata["tools"] = list(dict.fromkeys(req.tools))
 
     try:
         lines = ["---"]

@@ -9,6 +9,11 @@
       "id": "tool-testing-agent-prompt",
       "name": "Tool Testing Agent Prompt",
       "description": "Evaluate the performance of given tools by answering basic questions and following predefined rules to ensure accuracy and reliability."
+    },
+    {
+      "id": "ai-agent-prompt-for-tool-testing",
+      "name": "AI Agent Prompt for Tool Testing",
+      "description": ""
     }
   ]
 }

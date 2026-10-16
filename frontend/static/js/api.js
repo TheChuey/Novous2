@@ -171,6 +171,34 @@ export const Api = {
     return get(`/api/file/read?path=${encodeURIComponent(path)}`);
   },
 
+  async readManagedFile(path) {
+    return get(`/api/file-manager/read?path=${encodeURIComponent(path)}`);
+  },
+
+  async getManagedFileTree(path = '') {
+    return get(`/api/file-manager/tree?path=${encodeURIComponent(path)}`);
+  },
+
+  async getFileManagerRoots() {
+    return get('/api/file-manager/roots');
+  },
+
+  async selectFileManagerRoot(path) {
+    return send('POST', '/api/file-manager/roots/select', { path });
+  },
+
+  async writeManagedFile(path, content) {
+    return send('POST', '/api/file-manager/write', { path, content });
+  },
+
+  async createManagedPath(path, kind = 'file') {
+    return send('POST', '/api/file-manager/create', { path, kind });
+  },
+
+  async deleteManagedPath(path) {
+    return send('POST', '/api/file-manager/delete', { path });
+  },
+
   async writeFile(path, content) {
     return send('POST', '/api/file/write', { path, content });
   },
@@ -286,9 +314,9 @@ export const Api = {
     return send('POST', '/api/testing/evaluate_markdown', { markdown, agent_id: agentId });
   },
 
-  async publishAgent(agentId, label = '', markdown, environment = 'workspace') {
+  async publishAgent(agentId, label = '', markdown, environment = 'workspace', tools = []) {
     return send('POST', '/api/testing/publish', {
-      agent_id: agentId, label, markdown, environment
+      agent_id: agentId, label, markdown, environment, tools
     });
   },
 

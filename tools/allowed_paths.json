@@ -2,5 +2,17 @@
   "map_roots": [
     "E:\\Novous2\\workspace",
     "C:\\Users\\43319\\OneDrive\\D\\Documents"
-  ]
+  ],
+  "file_manager_root": "E:\\Novous2\\workspace",
+  "file_manager_roots": [
+    {
+      "name": "Workspace",
+      "path": "E:\\Novous2\\workspace"
+    },
+    {
+      "name": "Documents",
+      "path": "C:\\Users\\43319\\OneDrive\\D\\Documents"
+    }
+  ],
+  "active_file_manager_root": "E:\\Novous2\\workspace"
 }

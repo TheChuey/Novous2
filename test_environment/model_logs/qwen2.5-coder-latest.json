@@ -1,9 +1,10 @@
 {
   "model": "qwen2.5-coder:latest",
-  "runs": 4,
-  "passes": 3,
+  "runs": 10,
+  "passes": 4,
   "probe_failures": {
-    "fact_correct": 1
+    "fact_correct": 1,
+    "description_match": 5
   },
   "entries": [
     {
@@ -60,6 +61,99 @@
       ],
       "weaknesses": [],
       "improvements": []
+    },
+    {
+      "at": "2026-10-16T05:55:51+00:00",
+      "title": "File Manager Tools Tester Agent",
+      "passed": true,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model's summary matches the description.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [],
+      "improvements": []
+    },
+    {
+      "at": "2026-10-16T06:11:28+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:13:28+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:14:40+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:24:32+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
+    },
+    {
+      "at": "2026-10-16T06:26:30+00:00",
+      "title": "AI Agent Prompt for Tool Testing",
+      "passed": false,
+      "strengths": [
+        "The model states its role in line with the title.",
+        "The model answers known facts correctly under this prompt.",
+        "The model declines to invent answers it cannot know."
+      ],
+      "weaknesses": [
+        "Model test: Description matches behavior: 1/9 description keywords echoed; missing: file, manager, performing, reporting, results, series"
+      ],
+      "improvements": [
+        "Make the description state the main task in plain words and repeat those words in the Role and Purpose sections."
+      ]
     }
   ]
 }

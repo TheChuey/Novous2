@@ -9,6 +9,7 @@ from editor.interface import router as editor_router
 from workspace.interface import router as workspace_router
 from test_environment.interface import router as test_router
 from codebuilder.interface import router as codebuilder_router
+from file_manager.interface import router as file_manager_router
 from tools.interface import router as tools_router
 
 app = FastAPI(title="Novous2 AGENT FACTORY", version="4.0.0")
@@ -20,6 +21,7 @@ app.include_router(editor_router)
 app.include_router(workspace_router)
 app.include_router(test_router)
 app.include_router(codebuilder_router)
+app.include_router(file_manager_router)
 
 # Serve Static Assets (CSS, JS)
 app.mount("/static", StaticFiles(directory=Path("frontend") / "static"), name="static")

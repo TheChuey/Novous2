@@ -1,1 +1,0 @@
-my name is Jesus \nI work at costco\nmy family is Mom Dad Sister and Brother in law\none of my goals in life is to be developer and i am working on Novous app

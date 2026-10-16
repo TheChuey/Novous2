@@ -22,6 +22,7 @@ _LOADED_FILES: set[Path] = set()
 PROVIDER_BINDINGS = {
     "core_engine": "core_engine.interface",
     "editor": "editor.interface",
+    "file_manager": "file_manager.interface",
     "workspace": "workspace.interface",
     "test_environment": "test_environment.interface",
     "codebuilder": "codebuilder.interface",

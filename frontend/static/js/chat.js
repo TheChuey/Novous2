@@ -1,6 +1,7 @@
 import { Api } from './api.js';
 import { createIcon } from './icons.js';
 import { buildTestPanel } from './test_panel.js';
+import { renderTree } from './tree.js';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, c => ({
@@ -17,27 +18,12 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 export function renderChatView(container) {
   container.innerHTML = `
     <div class="chat-layout">
-      <aside class="chat-sidebar">
-        <h3>Agents Workspace</h3>
-        <select id="chat-agent-select" class="form-select">
-          <option value="">Loading agents...</option>
-        </select>
-        <div id="agent-meta-card" class="card mt-3">
-          <p class="text-muted">Select an agent to begin chatting.</p>
+      <aside class="chat-file-sidebar">
+        <div class="chat-file-header">
+          <h3>Workspace Files</h3>
+          <span class="text-muted small">Open a file in the editor</span>
         </div>
-        <div class="chat-sidebar-actions">
-          <label class="checkbox-row">
-            <input type="checkbox" id="chat-use-tools" checked>
-            <span>Attach tools (agent mode)</span>
-          </label>
-          <button class="btn btn-sm btn-primary" id="chat-save-log" disabled>Save Session Log (.md)</button>
-          <label class="model-picker">
-            <span class="model-picker-label">Model <span id="model-count" class="text-muted small"></span></span>
-            <select id="chat-model-select" class="form-select" disabled><option value="">Detecting models…</option></select>
-          </label>
-          <button class="btn btn-sm" id="chat-reset" disabled>Reset session</button>
-        </div>
-        <div id="chat-session-info" class="text-muted small mt-3"></div>
+        <div id="chat-file-tree" class="tree-pane"></div>
       </aside>
 
       <section class="chat-main">
@@ -52,10 +38,33 @@ export function renderChatView(container) {
 
       <aside class="test-panel">
         <div class="test-panel-header">
-          <span class="test-panel-title">Test</span>
+          <span class="test-panel-title">Chat & Test Controls</span>
         </div>
         <div class="test-panel-content">
           <div id="testPanelButtons" class="test-grid"></div>
+          <section class="chat-controls">
+            <h3 class="chat-controls-title">Chat settings</h3>
+            <label class="chat-field-label" for="chat-agent-select">Agent</label>
+            <select id="chat-agent-select" class="form-select">
+              <option value="">Loading agents...</option>
+            </select>
+            <div id="agent-meta-card" class="card chat-agent-meta">
+              <p class="text-muted">Select an agent to begin chatting.</p>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="chat-use-tools" checked>
+              <span>Attach tools (agent mode)</span>
+            </label>
+            <label class="model-picker">
+              <span class="model-picker-label">Model <span id="model-count" class="text-muted small"></span></span>
+              <select id="chat-model-select" class="form-select" disabled><option value="">Detecting models…</option></select>
+            </label>
+            <div class="chat-session-buttons">
+              <button class="btn btn-sm btn-primary" id="chat-save-log" disabled>Save Session Log (.md)</button>
+              <button class="btn btn-sm" id="chat-reset" disabled>Reset session</button>
+            </div>
+            <div id="chat-session-info" class="text-muted small"></div>
+          </section>
         </div>
       </aside>
     </div>`;
@@ -83,6 +92,20 @@ export function renderChatView(container) {
   container.querySelector('#chat-save-log').prepend(createIcon('save'));
   container.querySelector('#chat-reset').prepend(createIcon('reset'));
   sendButton.prepend(createIcon('send'));
+
+  renderTree(container.querySelector('#chat-file-tree'), {
+    manageRoots: true,
+    onSelect: path => {
+      if (document.getElementById('app')) {
+        window.dispatchEvent(new CustomEvent('novous:open-editor', {
+          detail: { path, managedFile: true }
+        }));
+      } else {
+        const params = new URLSearchParams({ path, managed: '1' });
+        window.location.assign(`/editor?${params}`);
+      }
+    }
+  });
 
   function syncActionButtons() {
     const hasAgent = agents.some(agent => agent.id === agentSelect.value);

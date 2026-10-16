@@ -137,5 +137,33 @@
     "label": "prompt-creation",
     "snapshot": "tool-testing-agent__prompt-creation__20261015-165245",
     "published_at": "2026-10-15T16:52:46.005708+00:00"
+  },
+  {
+    "agent_id": "file-manager-tools-tester-agent",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__file-manager-tools-tester-agent__prompt-creation__20261016-055631",
+    "published_at": "2026-10-16T05:56:31.104236+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061208",
+    "published_at": "2026-10-16T06:12:08.792034+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "prompt-creation",
+    "label": "prompt-creation",
+    "snapshot": "prompt-creation__ai-agent-prompt-for-tool-testing__prompt-creation__20261016-061454",
+    "published_at": "2026-10-16T06:14:54.405855+00:00"
+  },
+  {
+    "agent_id": "ai-agent-prompt-for-tool-testing",
+    "environment": "workspace",
+    "label": "prompt-creation",
+    "snapshot": "ai-agent-prompt-for-tool-testing__prompt-creation__20261016-062701",
+    "published_at": "2026-10-16T06:27:01.669448+00:00"
   }
 ]

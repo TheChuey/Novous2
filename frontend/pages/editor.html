@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editor — Novous2 Agent Factory</title>
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/codebuilder.css">
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.min.js"></script>
 </head>
 <body class="bg-dark text-light">
   <div class="app-container">
@@ -30,7 +32,10 @@
   <script type="module">
     import { renderEditorView } from '/static/js/editor.js';
     const params = new URLSearchParams(location.search);
-    renderEditorView(document.getElementById('view-container'), params.get('path'));
+    const path = params.get('path');
+    renderEditorView(document.getElementById('view-container'), path
+      ? { path, managedFile: params.get('managed') === '1' }
+      : null);
   </script>
 </body>
 </html>

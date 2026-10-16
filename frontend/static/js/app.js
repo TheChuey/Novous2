@@ -50,7 +50,7 @@ function renderDashboardView(container) {
       </section>
 
       <div class="dash-grid">
-        <section class="card">
+        <section class="card dash-agent-card">
           <div class="card-head">
             <h3>Agents</h3>
             <button class="btn btn-sm btn-primary" id="dash-new-agent">+ New Agent</button>
@@ -91,7 +91,7 @@ function renderDashboardView(container) {
           </div>
         </section>
 
-        <section class="card">
+        <section class="card dash-squad-card">
           <div class="card-head">
             <h3>Squads</h3>
             <button class="btn btn-sm btn-primary" id="dash-new-squad">+ New Squad</button>
@@ -108,12 +108,17 @@ function renderDashboardView(container) {
           </ul>
         </section>
 
-        <section class="card">
-          <div class="card-head"><h3>Workspace Tree</h3></div>
+        <section class="card dash-tree-card">
+          <div class="card-head">
+            <div>
+              <h3>Workspace Tree</h3>
+              <p class="text-muted small">Choose a configured folder. Add named paths under <code>file_manager_roots</code> in <code>tools/allowed_paths.json</code>.</p>
+            </div>
+          </div>
           <div id="dash-tree" class="tree-pane tree-pane-sm"></div>
         </section>
 
-        <section class="card">
+        <section class="card dash-health-card">
           <div class="card-head"><h3>System Health</h3></div>
           <div id="dash-health" class="health-panel">Checking…</div>
         </section>
@@ -279,7 +284,10 @@ function renderDashboardView(container) {
     catch (err) { alert(err.message); }
   });
 
-  renderTree(container.querySelector('#dash-tree'), { onSelect: (path) => switchTab('editor', path) });
+  renderTree(container.querySelector('#dash-tree'), {
+    manageRoots: true,
+    onSelect: path => switchTab('editor', { path, managedFile: true })
+  });
 
   const healthBox = container.querySelector('#dash-health');
   Api.getHealth().then(h => {
@@ -324,6 +332,13 @@ export function switchTab(tab, payload = null) {
   const renderer = views[tab];
   if (renderer) renderer(container, payload);
 }
+
+window.addEventListener('novous:open-editor', event => {
+  const file = event.detail;
+  if (file && typeof file.path === 'string') {
+    switchTab('editor', { path: file.path, managedFile: file.managedFile === true });
+  }
+});
 
 async function boot() {
   document.querySelectorAll('.nav-btn').forEach(btn => {

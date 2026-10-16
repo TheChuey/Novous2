@@ -1375,7 +1375,9 @@ export function renderPromptCreationView(container) {
     if (!environment || !agentId) return showMsg('Select an agent to publish first.', true);
     if (!preview.value.trim()) return showMsg('Assemble a prompt before saving it to an agent.', true);
     try {
-      const res = await Api.publishAgent(agentId, 'snapshot', preview.value, environment);
+      const res = await Api.publishAgent(
+        agentId, 'snapshot', preview.value, environment, [...promptTools.keys()]
+      );
       showMsg(`Saved to ${res.path} and ${res.metadata_path} (headers ${res.header_report.verdict}; snapshot ${res.snapshot}).`);
     } catch (err) {
       showMsg(err.message, true);
@@ -1492,7 +1494,9 @@ export function renderPromptCreationView(container) {
         saveButton.disabled = true;
         try {
           await Api.createAgent(id, name, description, mode, '', agentEnvironment, environmentName);
-          await Api.publishAgent(id, 'prompt-creation', preview.value, agentEnvironment);
+          await Api.publishAgent(
+            id, 'prompt-creation', preview.value, agentEnvironment, [...promptTools.keys()]
+          );
           showMsg(`Agent '${name}' created from the prompt (library/${id}.md)${result.passed ? '.' : ' even though tests failed.'}`);
           form.classList.add('hidden');
           await loadPromptAgents();
