@@ -1,7 +1,7 @@
 Date: 2026-10-15
 Name: Novous2 Application Snapshot
 Filename: NOVOUS2_APP_SNAPSHOT_20261015_new.md
-Commit: ba9b6a2
+Commit: 7b0549f
 Description: Self-contained reference for an AI agent. Captures Novous2 app purpose, architecture, file structure, and complete source code. Designed for grounding/understanding without repo access.
 
 # NOVOUS2 APPLICATION SNAPSHOT
