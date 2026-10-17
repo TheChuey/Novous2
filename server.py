@@ -14,6 +14,14 @@ from tools.interface import router as tools_router
 
 app = FastAPI(title="Novous2 AGENT FACTORY", version="4.0.0")
 
+
+@app.on_event("startup")
+def migrate_sandbox_environment():
+    """Move packages from the old in-repo sandbox venv to the configured sandbox folder."""
+    import threading
+    from test_environment import sandbox_env
+    threading.Thread(target=sandbox_env.migrate_legacy, daemon=True).start()
+
 # Mount Component Backend Routers
 app.include_router(tools_router)
 app.include_router(core_router)
@@ -42,6 +50,10 @@ def codebuilder_page():
 @app.get("/chat")
 def chat_page():
     return FileResponse("frontend/pages/chat.html")
+
+@app.get("/terminal")
+def terminal_page():
+    return FileResponse("frontend/pages/terminal.html")
 
 @app.api_route("/test", methods=["GET", "POST"])
 def test_page():

@@ -12,7 +12,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from test_environment import (
-    behavior_probe, model_log, prompt_builder, prompt_judge, report_store, test_runner, tool_workbench,
+    behavior_probe, model_log, prompt_builder, prompt_judge, report_store, sandbox_env, test_runner, tool_workbench,
 )
 
 router = APIRouter()
@@ -28,11 +28,16 @@ class HeaderTestRequest(BaseModel):
 class ToolWorkbenchRequest(BaseModel):
     tool_code: str = Field(..., min_length=1, max_length=50000)
     function_input: dict[str, Any] = Field(default_factory=dict)
-
+    timeout_seconds: float = Field(5, ge=1, le=600)
 
 class ToolWorkbenchLLMRequest(ToolWorkbenchRequest):
     model: str = Field(..., min_length=1, max_length=120)
     user_prompt: str = Field(..., min_length=1, max_length=5000)
+
+
+class ToolWorkbenchGenerateRequest(BaseModel):
+    model: str = Field(..., min_length=1, max_length=120)
+    description: str = Field(..., min_length=1, max_length=5000)
 
 
 class AssembleRequest(BaseModel):
@@ -238,13 +243,21 @@ def api_get_report(report_id: str):
 
 @router.post("/api/testing/tool-workbench/execute")
 def api_execute_tool_test(req: ToolWorkbenchRequest):
-    return tool_workbench.run_python_tool(req.tool_code, req.function_input)
+    return tool_workbench.run_python_tool(req.tool_code, req.function_input, timeout=req.timeout_seconds)
+
+
+@router.post("/api/testing/tool-workbench/test-harness")
+def api_test_harness(req: ToolWorkbenchRequest):
+    try:
+        return {"harness": tool_workbench.build_test_harness(req.tool_code)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.post("/api/testing/tool-workbench/test-with-llm")
 def api_test_tool_with_llm(req: ToolWorkbenchLLMRequest):
     try:
-        function = tool_workbench.get_function_definition(req.tool_code)
+        function = tool_workbench.get_function_definition(tool_workbench.strip_test_harness(req.tool_code))
         schema = tool_workbench.get_tool_schema(function)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -262,46 +275,37 @@ def api_test_tool_with_llm(req: ToolWorkbenchLLMRequest):
     message = response.get("message", {})
     tool_calls = message.get("tool_calls") or []
     llm_text_response = message.get("content", "")
-    if not tool_calls:
+
+    def failure(code: str, text: str, arguments=None):
         return {
             "status": "ERROR",
-            "error_code": "ERR_NO_TOOL_CALL",
-            "message": "The selected model did not return a tool call.",
+            "error_code": code,
+            "message": text,
             "llm_text_response": llm_text_response,
-            "tool_calls_detected": [],
+            "tool_calls_detected": tool_calls,
+            "function_input": arguments,
+            "tool_execution_result": None,
         }
+
+    if not tool_calls:
+        return failure("ERR_NO_TOOL_CALL", "The selected model did not return a tool call.")
 
     call = tool_calls[0].get("function", {})
     if call.get("name") != function.name:
-        return {
-            "status": "ERROR",
-            "error_code": "ERR_UNEXPECTED_TOOL_CALL",
-            "message": "The model called an unexpected tool function.",
-            "llm_text_response": llm_text_response,
-            "tool_calls_detected": tool_calls,
-        }
+        return failure("ERR_UNEXPECTED_TOOL_CALL", "The model called an unexpected tool function.")
     arguments = call.get("arguments", {})
     if isinstance(arguments, str):
         try:
             arguments = json.loads(arguments)
         except json.JSONDecodeError:
-            return {
-                "status": "ERROR",
-                "error_code": "ERR_INVALID_TOOL_ARGUMENTS",
-                "message": "The model returned invalid JSON tool arguments.",
-                "llm_text_response": llm_text_response,
-                "tool_calls_detected": tool_calls,
-            }
+            return failure("ERR_INVALID_TOOL_ARGUMENTS", "The model returned invalid JSON tool arguments.")
     if not isinstance(arguments, dict):
-        return {
-            "status": "ERROR",
-            "error_code": "ERR_INVALID_TOOL_ARGUMENTS",
-            "message": "The model's tool arguments must be a JSON object.",
-            "llm_text_response": llm_text_response,
-            "tool_calls_detected": tool_calls,
-        }
+        return failure("ERR_INVALID_TOOL_ARGUMENTS", "The model's tool arguments must be a JSON object.")
+    problem = tool_workbench.validate_arguments(function, arguments)
+    if problem:
+        return failure("ERR_INVALID_TOOL_ARGUMENTS", problem, arguments)
 
-    execution = tool_workbench.run_python_tool(req.tool_code, arguments)
+    execution = tool_workbench.run_python_tool(tool_workbench.strip_test_harness(req.tool_code), arguments, timeout=req.timeout_seconds)
     return {
         "status": execution["status"],
         "error_code": execution["error_code"],
@@ -312,13 +316,25 @@ def api_test_tool_with_llm(req: ToolWorkbenchLLMRequest):
     }
 
 
+@router.post("/api/testing/tool-workbench/generate-function")
+def api_generate_tool_function(req: ToolWorkbenchGenerateRequest):
+    try:
+        generated = tool_workbench.generate_python_function(req.description, req.model)
+    except ValueError as exc:
+        return {"status": "ERROR", "error_code": "ERR_INVALID_GENERATED_FUNCTION",
+                "message": str(exc), "code": None, "function_name": None}
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Function generation failed: {exc}") from exc
+    return {"status": "SUCCESS", "error_code": None, **generated}
+
+
 @router.post("/api/testing/tool-workbench/promote")
 def api_promote_tool(req: ToolWorkbenchRequest):
     try:
-        function = tool_workbench.get_function_definition(req.tool_code)
+        function = tool_workbench.get_function_definition(tool_workbench.strip_test_harness(req.tool_code))
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    execution = tool_workbench.run_python_tool(req.tool_code, req.function_input)
+    execution = tool_workbench.run_python_tool(tool_workbench.strip_test_harness(req.tool_code), req.function_input, timeout=req.timeout_seconds)
     if execution["status"] != "SUCCESS":
         raise HTTPException(
             status_code=400,
@@ -326,8 +342,42 @@ def api_promote_tool(req: ToolWorkbenchRequest):
                     "test_result": execution},
         )
 
-    promoted = tool_workbench.promote_python_tool(req.tool_code, function.name)
-    return {"promoted": promoted, "test_result": execution}
+    clean_code = tool_workbench.strip_test_harness(req.tool_code)
+    promoted = tool_workbench.promote_python_tool(clean_code, function.name)
+    requirements_added = sandbox_env.add_to_requirements(clean_code)
+    return {"promoted": promoted, "test_result": execution, "requirements_added": requirements_added}
+
+
+class SandboxInstallRequest(BaseModel):
+    packages: list[str] = Field(..., min_length=1, max_length=20)
+
+
+class SandboxCheckRequest(BaseModel):
+    source: str = Field("", max_length=50000)
+    modules: list[str] = Field(default_factory=list, max_length=20)
+
+
+@router.get("/api/sandbox/packages")
+def api_sandbox_packages():
+    return {"exists": sandbox_env.exists(), "packages": sandbox_env.list_packages()}
+
+
+@router.post("/api/sandbox/check")
+def api_sandbox_check(req: SandboxCheckRequest):
+    return {"missing": sandbox_env.missing_modules(req.source, req.modules)}
+
+
+@router.post("/api/sandbox/install")
+def api_sandbox_install(req: SandboxInstallRequest):
+    try:
+        return sandbox_env.install(req.packages)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/api/sandbox/reset")
+def api_sandbox_reset():
+    return sandbox_env.reset()
 
 
 @router.get("/api/testing/tool-workbench/tools/{tool_name}")

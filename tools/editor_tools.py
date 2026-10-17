@@ -13,6 +13,7 @@ def read_file(path: str) -> str:
 def write_file(path: str, content: str) -> str:
     """Write and verify non-empty text at a workspace-root-relative path; bare filenames go in the root.
 
+    Absolute paths (e.g. E:\\Novous2_Note\\test\\hello.txt) also work when inside a folder listed in allowed_paths.json.
     Do not prefix paths with 'workspace/'.
     Supports formats such as .txt, .md, .py, .json, .html, .css, and .js.
     Use create_file only when an intentionally empty file is requested.

@@ -7,7 +7,7 @@ function esc(value) {
 }
 
 export function renderTree(container, options = {}) {
-  const { onSelect, onBeforeDelete, onDelete, manageRoots = false } = options;
+  const { onSelect, onSelectDirectory, onBeforeDelete, onDelete, manageRoots = false } = options;
   container.innerHTML = `
     ${manageRoots ? `
     <label class="tree-root-picker">
@@ -29,11 +29,23 @@ export function renderTree(container, options = {}) {
   const rootPath = container.querySelector('[data-root-path]');
   let selectedDirectory = '';
   const expandedPaths = new Set();
+  let knownPaths = null;
+  let loading = false;
 
-  async function load() {
-    body.innerHTML = '<p class="tree-message">Loading files…</p>';
+  const collectPaths = (node, out = new Set()) => {
+    (node.children || []).forEach(child => {
+      out.add(child.path);
+      if (child.type === 'directory') collectPaths(child, out);
+    });
+    return out;
+  };
+
+  async function load({ silent = false } = {}) {
+    if (loading) return;
+    loading = true;
+    if (!silent) body.innerHTML = '<p class="tree-message">Loading files…</p>';
     try {
-      if (manageRoots) {
+      if (manageRoots && !silent) {
         const config = await Api.getFileManagerRoots();
         rootName.textContent = config.roots.find(root => root.path === config.active_path)?.name || 'Workspace';
         rootPicker.replaceChildren(...config.roots.map(root => {
@@ -46,10 +58,23 @@ export function renderTree(container, options = {}) {
         rootPath.textContent = config.active_path;
       }
       const tree = await Api.getManagedFileTree();
+      const paths = collectPaths(tree);
+      const added = knownPaths ? [...paths].filter(path => !knownPaths.has(path)) : [];
+      const changed = !knownPaths || added.length > 0 || paths.size !== knownPaths.size;
+      knownPaths = paths;
+      if (silent && !changed) return;
       if (!manageRoots) rootName.textContent = tree.name || 'Workspace';
       body.replaceChildren(...(tree.children || []).map(child => buildNode(child, 0)));
+      added.forEach(path => {
+        const row = [...body.querySelectorAll('.tree-row')].find(item => item.dataset.path === path);
+        if (!row) return;
+        row.classList.add('tree-new');
+        setTimeout(() => row.classList.remove('tree-new'), 4000);
+      });
     } catch (error) {
-      body.innerHTML = `<p class="tree-message text-danger">${esc(error.message)}</p>`;
+      if (!silent) body.innerHTML = `<p class="tree-message text-danger">${esc(error.message)}</p>`;
+    } finally {
+      loading = false;
     }
   }
 
@@ -87,6 +112,7 @@ export function renderTree(container, options = {}) {
         selectedDirectory = node.path || '';
         body.querySelectorAll('.tree-row.selected').forEach(item => item.classList.remove('selected'));
         row.classList.add('selected');
+        if (onSelectDirectory) onSelectDirectory(selectedDirectory);
         if (children) {
           const collapsed = children.classList.toggle('hidden');
           if (collapsed) expandedPaths.delete(node.path);
@@ -149,7 +175,7 @@ export function renderTree(container, options = {}) {
     }
   }
 
-  container.querySelector('[data-action="refresh"]').addEventListener('click', load);
+  container.querySelector('[data-action="refresh"]').addEventListener('click', () => load());
   if (rootPicker) {
     rootPicker.addEventListener('change', async () => {
       rootPicker.disabled = true;
@@ -170,5 +196,18 @@ export function renderTree(container, options = {}) {
   container.querySelector('[data-action="new-dir"]').addEventListener('click', () => create('directory'));
 
   load();
+
+  // Pick up files written elsewhere (agent tools, memory mode): poll and listen for change events.
+  const silentReload = () => {
+    if (!container.isConnected) {
+      clearInterval(pollTimer);
+      window.removeEventListener('novous:fs-changed', silentReload);
+      return;
+    }
+    if (!document.hidden) load({ silent: true });
+  };
+  const pollTimer = setInterval(silentReload, 3000);
+  window.addEventListener('novous:fs-changed', silentReload);
+
   return { reload: load };
 }

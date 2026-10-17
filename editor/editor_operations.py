@@ -1,10 +1,27 @@
 """Physical file CRUD & Path Security for the editor pillar."""
 
+import json
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = REPO_ROOT / "workspace"
 LIBRARY_ROOT = REPO_ROOT / "library"
+ALLOWED_PATHS_CONFIG = REPO_ROOT / "tools" / "allowed_paths.json"
+
+
+def _configured_write_roots() -> list[Path]:
+    """Folders from allowed_paths.json that absolute paths may point into (re-read on every call)."""
+    try:
+        data = json.loads(ALLOWED_PATHS_CONFIG.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return []
+    roots = []
+    for entry in data.get("file_manager_roots", []):
+        raw = entry.get("path") if isinstance(entry, dict) else entry
+        if raw:
+            roots.append(Path(os.path.expandvars(str(raw))).expanduser().resolve())
+    return roots
 
 
 def resolve_project_path(relative_path: str, root: Path | None = None) -> Path:
@@ -21,6 +38,18 @@ def resolve_project_path(relative_path: str, root: Path | None = None) -> Path:
         except ValueError:
             raise ValueError(f"Access outside agent library '{allowed_root}' is forbidden.") from None
         return candidate
+
+    if root is None and Path(relative_path).is_absolute():
+        absolute = Path(os.path.expandvars(relative_path)).expanduser().resolve()
+        allowed_roots = _configured_write_roots()
+        for allowed in allowed_roots:
+            try:
+                absolute.relative_to(allowed)
+                return absolute
+            except ValueError:
+                continue
+        allowed_list = ", ".join(str(r) for r in allowed_roots) or "none configured"
+        raise ValueError(f"Absolute path '{absolute}' is outside the allowed folders: {allowed_list}")
 
     base_root = (root or PROJECT_ROOT).resolve()
     candidate = (base_root / clean_rel).resolve()

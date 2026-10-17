@@ -82,7 +82,7 @@ class ToolWorkbenchTests(unittest.TestCase):
             ) as run_tool:
                 result = api_test_tool_with_llm(request)
 
-        run_tool.assert_called_once_with(source, arguments)
+        run_tool.assert_called_once_with(source, arguments, timeout=5)
         self.assertEqual(result["function_input"], arguments)
         self.assertEqual(result["tool_execution_result"], execution)
 
@@ -168,6 +168,62 @@ class ToolWorkbenchTests(unittest.TestCase):
         self.assertEqual(result["error_code"], "ERR_UNEXPECTED_TOOL_CALL")
         self.assertEqual(result["llm_text_response"], "Trying an unrelated function.")
         self.assertEqual(result["tool_calls_detected"], [tool_call])
+
+    def test_missing_llm_arguments_are_rejected_before_execution(self):
+        ollama = Mock()
+        ollama.chat.return_value = {
+            "message": {"content": "", "tool_calls": [
+                {"function": {"name": "add", "arguments": {"left": 8}}}]}
+        }
+        request = ToolWorkbenchLLMRequest(
+            model="m",
+            tool_code="def add(left: int, right: int):\n    return left + right\n",
+            user_prompt="Add.",
+        )
+        with patch.dict(sys.modules, {"ollama": ollama}):
+            result = api_test_tool_with_llm(request)
+        self.assertEqual(result["error_code"], "ERR_INVALID_TOOL_ARGUMENTS")
+        self.assertIsNone(result["tool_execution_result"])
+        self.assertEqual(result["function_input"], {"left": 8})
+
+    def test_generate_function_extracts_code_and_retries_once(self):
+        replies = iter([
+            "```python\nthis is not python(\n```",
+            "```python\ndef add(a: int, b: int) -> int:\n    \"\"\"Add.\"\"\"\n    return a + b\n```",
+        ])
+        chat = Mock(side_effect=lambda **_: {"message": {"content": next(replies)}})
+        result = tool_workbench.generate_python_function("add numbers", "m", chat=chat)
+        self.assertEqual(result["function_name"], "add")
+        self.assertEqual(chat.call_count, 2)
+
+    def test_generate_function_fails_after_invalid_retry(self):
+        chat = Mock(return_value={"message": {"content": "no code here"}})
+        with self.assertRaises(ValueError):
+            tool_workbench.generate_python_function("x", "m", chat=chat)
+
+    def test_builds_test_harness_for_any_signature_and_runs_it(self):
+        source = (
+            "def f(a: float, name: str, tags: list, n: int = 3, *, flag: bool = False):\n"
+            "    print('hello', a, name, tags, n, flag)\n    return n\n"
+        )
+        harness = tool_workbench.build_test_harness(source)
+        self.assertIn("a = 1.0", harness)
+        self.assertIn('name = "test"', harness)
+        self.assertIn("tags = []", harness)
+        self.assertIn("n = 3", harness)
+        self.assertIn("flag = False", harness)
+        self.assertIn("result = f(a=a, name=name, tags=tags, n=n, flag=flag)", harness)
+        with_block = source + "\n\n" + harness
+        self.assertEqual(tool_workbench.strip_test_harness(with_block).strip(), source.strip())
+        result = tool_workbench.run_python_tool(with_block, {})
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertIn("hello 1.0 test [] 3 False", result["stdout"])
+
+    def test_harness_errors_are_reported_from_script_run(self):
+        source = "def f(a: int):\n    return 1 // 0\n"
+        result = tool_workbench.run_python_tool(source + "\n" + tool_workbench.build_test_harness(source), {})
+        self.assertEqual(result["status"], "ERROR")
+        self.assertIn("ZeroDivisionError", result["stderr"])
 
     def test_rejects_failed_test_before_promotion(self):
         request = ToolWorkbenchRequest(

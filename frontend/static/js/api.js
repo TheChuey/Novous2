@@ -292,21 +292,29 @@ export const Api = {
     return send('POST', '/api/testing/run_header_tests', { agent_id: agentId, environment });
   },
 
-  async executeToolTest(toolCode, functionInput = {}) {
+  async executeToolTest(toolCode, functionInput = {}, timeoutSeconds = 5) {
     return send('POST', '/api/testing/tool-workbench/execute', {
-      tool_code: toolCode, function_input: functionInput
+      tool_code: toolCode, function_input: functionInput, timeout_seconds: timeoutSeconds
     });
   },
 
-  async testToolWithLlm(model, toolCode, userPrompt) {
+  async generateToolFunction(model, description) {
+    return send('POST', '/api/testing/tool-workbench/generate-function', { model, description });
+  },
+
+  async getToolTestHarness(toolCode) {
+    return send('POST', '/api/testing/tool-workbench/test-harness', { tool_code: toolCode });
+  },
+
+  async testToolWithLlm(model, toolCode, userPrompt, timeoutSeconds = 5) {
     return send('POST', '/api/testing/tool-workbench/test-with-llm', {
-      model, tool_code: toolCode, user_prompt: userPrompt
+      model, tool_code: toolCode, user_prompt: userPrompt, timeout_seconds: timeoutSeconds
     });
   },
 
-  async promoteTestedTool(toolCode, functionInput = {}) {
+  async promoteTestedTool(toolCode, functionInput = {}, timeoutSeconds = 5) {
     return send('POST', '/api/testing/tool-workbench/promote', {
-      tool_code: toolCode, function_input: functionInput
+      tool_code: toolCode, function_input: functionInput, timeout_seconds: timeoutSeconds
     });
   },
 

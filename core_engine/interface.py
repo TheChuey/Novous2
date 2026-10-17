@@ -1,11 +1,13 @@
 """Core Engine Doorway: Python API & FastAPI Router (/api/chat, /api/agents, /api/tools)."""
 
+import json
 import re
 import uuid
 from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Response
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
@@ -42,10 +44,8 @@ class ExportSessionRequest(BaseModel):
     session_id: str = Field(..., min_length=1)
 
 
-def run_single_agent(agent_id: str, message: str, model: str | None = None,
-                     session_id: str | None = None,
-                     environment: str = "workspace") -> dict:
-    """Doorway function: run one agent turn through the Think-Act-Observe loop."""
+def _get_agent(agent_id: str, model: str | None, session_id: str | None, environment: str):
+    """Load (or reuse) the session's Agent; returns (agent, session_key, profile)."""
     try:
         profile = agent_factory.load_agent(agent_id, environment)
     except FileNotFoundError as exc:
@@ -63,20 +63,30 @@ def run_single_agent(agent_id: str, message: str, model: str | None = None,
         SESSIONS.pop(session_key, None)
         agent = None
     if agent is None:
-        try:
-            tools = tool_catalog.get_tools(profile.tools) if profile.mode == "agent" else []
-            agent = Agent(model=model or profile.model or None, tools=tools, profile=profile,
-                          session=session_key)
-            SESSIONS[session_key] = agent
-        except Exception as exc:
-            return {
-                "reply": f"[engine] Failed to initialize agent '{agent_id}': {exc}",
-                "agent_id": agent_id,
-                "session_id": session_key,
-                "model": model or profile.model or "unknown",
-                "tool_events": [],
-                "tool_stats": {},
-            }
+        tools = tool_catalog.get_tools(profile.tools) if profile.mode == "agent" else []
+        agent = Agent(model=model or profile.model or None, tools=tools, profile=profile,
+                      session=session_key)
+        SESSIONS[session_key] = agent
+    return agent, session_key, profile
+
+
+def run_single_agent(agent_id: str, message: str, model: str | None = None,
+                     session_id: str | None = None,
+                     environment: str = "workspace") -> dict:
+    """Doorway function: run one agent turn through the Think-Act-Observe loop."""
+    try:
+        agent, session_key, profile = _get_agent(agent_id, model, session_id, environment)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        return {
+            "reply": f"[engine] Failed to initialize agent '{agent_id}': {exc}",
+            "agent_id": agent_id,
+            "session_id": session_id or agent_id,
+            "model": model or "unknown",
+            "tool_events": [],
+            "tool_stats": {},
+        }
 
 
     agent.tool_events = []
@@ -168,6 +178,51 @@ async def api_chat(req: ChatRequest):
             **event_data,
         )
     return result
+
+
+def _publish_tool_event(event: dict, session_id: str) -> None:
+    event_data = {
+        "tool": event["tool"],
+        "args": event.get("args", {}),
+        "status": event["status"],
+        "origin": event["origin"],
+    }
+    if event.get("error") is not None:
+        event_data["error"] = event["error"]
+    editor_session_manager.publish(
+        EditorEventType.TOOL_EXECUTED, event["tool"], session_id, **event_data,
+    )
+
+
+@router.post("/api/chat/stream")
+def api_chat_stream(req: ChatRequest):
+    """Server-sent events: token / tool_event / done / error."""
+    message = req.message.strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="Message must not be empty.")
+    agent, session_key, profile = _get_agent(req.agent_id, req.model, req.session_id, req.environment)
+
+    def sse(payload: dict) -> str:
+        return f"data: {json.dumps(payload)}\n\n"
+
+    def events():
+        agent.tool_events = []
+        try:
+            for item in agent.think_stream(message):
+                if item["type"] == "tool_event":
+                    _publish_tool_event(item["event"], session_key)
+                elif item["type"] == "done":
+                    item.update(agent_id=req.agent_id, session_id=session_key, model=agent.model)
+                yield sse(item)
+        except Exception as exc:
+            if agent.messages and agent.messages[-1].get("role") == "user":
+                agent.messages.pop()
+            yield sse({"type": "error", "detail": (
+                f"[engine] Could not reach the model runtime: {exc}\n"
+                f"Start Ollama (e.g. `ollama serve`) and pull the model `{agent.model}`, then retry.")})
+
+    return StreamingResponse(events(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @router.post("/api/chat/reset")

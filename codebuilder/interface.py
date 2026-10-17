@@ -5,12 +5,16 @@ delegates to ``service`` (use-cases) or ``execution`` (the engine).
 """
 
 import json
+import time
 from typing import Iterator
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 
+from . import files as script_files
 from . import service
+from . import terminal
 from .execution import cancel_run, execute_python_code, run_stream
 from .schemas import CodeExecutionRequest, CodeExecutionResult, StructuredEditRequest
 
@@ -85,3 +89,110 @@ def api_apply_structured_edit(req: StructuredEditRequest):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Could not write file: {exc}") from exc
+
+
+class TerminalCommand(BaseModel):
+    command: str = Field(..., min_length=1, max_length=terminal.MAX_COMMAND_CHARS)
+
+
+@router.get("/terminal/state")
+def api_terminal_state():
+    """Working folder, whether a command is running, and whether the sandbox exists."""
+    return terminal.session.state()
+
+
+@router.post("/terminal/run")
+def api_terminal_run(req: TerminalCommand):
+    """Run one command in the sandbox environment; output arrives through the stream."""
+    try:
+        terminal.session.run(req.command)
+    except terminal.TerminalBusy as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return terminal.session.state()
+
+
+@router.post("/terminal/stop")
+def api_terminal_stop():
+    return {"stopped": terminal.session.stop()}
+
+
+@router.post("/terminal/clear")
+def api_terminal_clear():
+    terminal.session.clear()
+    return terminal.session.state()
+
+
+@router.get("/terminal/stream")
+def api_terminal_stream(offset: int = 0):
+    """Server-sent events with new terminal output after ``offset`` (0 replays the buffer)."""
+    def events():
+        position = max(offset, 0)
+        last_state = None
+        idle = 0
+        while True:
+            text, position_end = terminal.session.read(position)
+            state = terminal.session.state()
+            if text or state != last_state:
+                payload = {"type": "output", "text": text, "offset": position_end, **state}
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                position, last_state, idle = position_end, state, 0
+            else:
+                idle += 1
+                if idle >= 100:
+                    yield ": keep-alive\n\n"
+                    idle = 0
+            time.sleep(0.15)
+
+    return StreamingResponse(
+        events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
+    )
+
+
+class SaveFileRequest(BaseModel):
+    folder: str = Field("", max_length=1000)
+    name: str = Field(..., min_length=1, max_length=200)
+    content: str = Field("", max_length=600000)
+    overwrite: bool = False
+
+
+@router.get("/files")
+def api_list_files():
+    """Allowed folders and the .py files inside them."""
+    return script_files.listing()
+
+
+@router.get("/files/read")
+def api_read_file(path: str):
+    try:
+        return script_files.read(path)
+    except script_files.FileRejected as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/files/save")
+def api_save_file(req: SaveFileRequest):
+    """Save editor code; returns ``exists: true`` (and writes nothing) when overwrite is needed."""
+    try:
+        return script_files.save(req.folder, req.name, req.content, req.overwrite)
+    except script_files.FileRejected as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"Could not write file: {exc}") from exc
+
+
+class RunCommandRequest(BaseModel):
+    path: str = Field(..., max_length=1000)
+    content: str = Field("", max_length=600000)
+
+
+@router.post("/files/run-command")
+def api_run_command(req: RunCommandRequest):
+    """Terminal command that runs a saved script (streamlit scripts use ``streamlit run``)."""
+    try:
+        path = script_files.sandbox_paths.resolve(req.path)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"command": script_files.run_command(str(path), req.content), "cwd": str(path.parent)}

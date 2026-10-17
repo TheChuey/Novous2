@@ -106,8 +106,14 @@ def _new_run_id() -> str:
 
 
 def resolve_python() -> str:
-    """Interpreter for runs: ``$NOVOUS2_PYTHON`` if set, else the server's Python."""
-    return os.environ.get("NOVOUS2_PYTHON") or sys.executable
+    """Interpreter for runs: ``$NOVOUS2_PYTHON``, else the test sandbox venv if present, else the server's Python."""
+    if os.environ.get("NOVOUS2_PYTHON"):
+        return os.environ["NOVOUS2_PYTHON"]
+    try:
+        from test_environment import sandbox_env
+        return sandbox_env.interpreter()
+    except Exception:  # noqa: BLE001 - keep CodeBuilder usable when the host app is absent
+        return sys.executable
 
 
 def _clamp_timeout(value: Optional[float]) -> float:
